@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function config(string $key, mixed $default = null): mixed
+function config(string $key, $default = null)
 {
     static $config = null;
 
@@ -113,7 +113,7 @@ function feature_icon_svg(string $name): string
     return $icons[$name] ?? $icons['shield'];
 }
 
-function cache_remember(string $key, int $ttl, callable $callback): mixed
+function cache_remember(string $key, int $ttl, callable $callback)
 {
     $file = __DIR__ . '/../storage/cache/' . preg_replace('/[^a-z0-9_.-]/i', '_', $key) . '.cache.php';
     if (is_file($file) && filemtime($file) + $ttl > time()) {

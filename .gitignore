@@ -1,3 +1,7 @@
 storage/cache/*.cache.php
 storage/logs/*.log
 .DS_Store
+deploy-config.json
+.last-deploy
+deploy.bat
+deploy.ps1
