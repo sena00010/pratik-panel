@@ -21,5 +21,6 @@ $router->post($adminPath . '/faqs/delete', [AdminController::class, 'deleteFaq']
 $router->post($adminPath . '/blogs/save', [AdminController::class, 'saveBlog']);
 $router->post($adminPath . '/blogs/delete', [AdminController::class, 'deleteBlog']);
 $router->post($adminPath . '/seo/save', [AdminController::class, 'saveSeo']);
+$router->post($adminPath . '/landing/save', [AdminController::class, 'saveLanding']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');

@@ -29,6 +29,19 @@ final class ContentRepository
         ];
     }
 
+    public function landingBlocks(): array
+    {
+        return cache_remember('landing_blocks', 300, function (): array {
+            $rows = Database::pdo()->query('SELECT block_key, title, payload FROM landing_blocks ORDER BY id ASC')->fetchAll();
+            $blocks = [];
+            foreach ($rows as $row) {
+                $decoded = json_decode((string) $row['payload'], true);
+                $blocks[$row['block_key']] = is_array($decoded) ? $decoded : [];
+            }
+            return $blocks;
+        });
+    }
+
     public function modules(bool $activeOnly = true): array
     {
         return cache_remember('modules_' . (int) $activeOnly, 300, function () use ($activeOnly): array {

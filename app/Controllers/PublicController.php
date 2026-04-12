@@ -17,6 +17,7 @@ final class PublicController
             'modules' => $this->repo->modules(),
             'faqs' => $this->repo->faqs(),
             'posts' => array_slice($this->repo->blogPosts(), 0, 3),
+            'landingBlocks' => $this->repo->landingBlocks(),
             'seo' => $this->repo->seo('home'),
         ]);
     }

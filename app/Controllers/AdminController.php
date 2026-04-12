@@ -1,4 +1,4 @@
-'<?php
+<?php
 declare(strict_types=1);
 
 final class AdminController
@@ -23,6 +23,7 @@ final class AdminController
             'faqs' => $this->repo->faqs(false),
             'posts' => $this->repo->blogPosts(false),
             'seoRows' => Database::pdo()->query('SELECT * FROM seo_meta ORDER BY page ASC, slug ASC')->fetchAll(),
+            'landingRows' => Database::pdo()->query('SELECT * FROM landing_blocks ORDER BY id ASC')->fetchAll(),
         ], 'layouts/admin');
     }
 
@@ -138,6 +139,30 @@ final class AdminController
         }
 
         $this->done('SEO kaydı güncellendi.');
+    }
+
+    public function saveLanding(): void
+    {
+        $this->guard();
+
+        try {
+            foreach ($_POST['payload'] ?? [] as $id => $payload) {
+                $id = (int) $id;
+                $payload = trim((string) $payload);
+                if ($id <= 0 || $payload === '') {
+                    continue;
+                }
+
+                json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+                $stmt = Database::pdo()->prepare('UPDATE landing_blocks SET payload = ? WHERE id = ?');
+                $stmt->execute([$payload, $id]);
+            }
+        } catch (JsonException $exception) {
+            $_SESSION['flash'] = 'JSON formatı hatalı: ' . $exception->getMessage();
+            redirect(config('app.admin_path'));
+        }
+
+        $this->done('Landing sayfası blokları güncellendi.');
     }
 
     private function isLoggedIn(): bool

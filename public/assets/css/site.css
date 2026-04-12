@@ -324,3 +324,184 @@ h1,h2,h3,
   .pricing-grid .featured em{right:18px;top:18px}
   .pricing-grid .featured>span{padding-right:96px}
 }
+
+/* Interactive AI panel: compact left column, equal visual weight */
+#nasil-calisir .split{
+  grid-template-columns:minmax(0,0.93fr) minmax(0,1fr);
+  gap:70px;
+  align-items:center;
+}
+#nasil-calisir .split>div:first-child{
+  max-width:720px;
+  justify-self:end;
+}
+#nasil-calisir .process-panel{
+  max-width:760px;
+  justify-self:start;
+  min-height:470px;
+  padding:32px 34px;
+}
+#nasil-calisir .steps{
+  margin-top:40px;
+  gap:14px;
+}
+#nasil-calisir .steps article{
+  cursor:pointer;
+  min-height:86px;
+  padding:17px 20px;
+  grid-template-columns:46px minmax(0,1fr);
+  transition:background-color .22s ease,opacity .22s ease,transform .22s ease;
+}
+#nasil-calisir .steps article:hover,
+#nasil-calisir .steps article:focus-visible{
+  opacity:.82;
+  transform:translateX(3px);
+  outline:0;
+}
+#nasil-calisir .steps article.active{
+  opacity:1;
+}
+#nasil-calisir .steps h3{
+  font-size:17px;
+  line-height:1.2;
+}
+#nasil-calisir .steps p{
+  font-size:14px;
+  line-height:1.42;
+  max-width:560px;
+}
+#nasil-calisir .process-panel>span{
+  display:block;
+  margin-bottom:22px;
+}
+#nasil-calisir [data-process-content]{
+  display:grid;
+  gap:18px;
+}
+#nasil-calisir .process-panel.is-changing [data-process-content]{
+  animation:processFade .22s ease;
+}
+@keyframes processFade{
+  from{opacity:.55;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+#nasil-calisir .assistant-card,
+#nasil-calisir .input-card,
+#nasil-calisir .chat-card{
+  margin-top:0;
+  border-radius:8px;
+  padding:18px 20px;
+}
+#nasil-calisir .assistant-card p,
+#nasil-calisir .input-card p,
+#nasil-calisir .chat-card p{
+  font-size:14.5px;
+  line-height:1.52;
+}
+#nasil-calisir .assistant-card em{
+  top:16px;
+  right:18px;
+  font-size:12px;
+  padding:4px 12px;
+}
+#nasil-calisir .input-card p{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#nasil-calisir .input-card p span,
+#nasil-calisir .code-card p span{
+  display:inline-flex;
+  border-radius:6px;
+  background:rgba(255,255,255,.08);
+  padding:4px 10px;
+  color:rgba(229,236,245,.62);
+  font-size:13px;
+  font-weight:650;
+}
+#nasil-calisir .process-note strong,
+#nasil-calisir .risk-card strong{
+  display:block;
+  margin-bottom:8px;
+}
+#nasil-calisir .result-card p{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  margin:7px 0 0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+#nasil-calisir .result-card p b,
+#nasil-calisir .code-card p b,
+#nasil-calisir .risk-card b{
+  color:var(--brand);
+}
+#nasil-calisir .code-card p{
+  margin-top:10px;
+}
+#nasil-calisir .code-card p:first-of-type b{
+  font-size:20px;
+  letter-spacing:.16em;
+}
+#nasil-calisir .chat-card{
+  border:1px solid #2b384a;
+  background:#121a27;
+}
+#nasil-calisir .chat-card p{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+  margin:0 0 14px;
+  color:rgba(229,236,245,.72);
+}
+#nasil-calisir .chat-card p:last-child{
+  margin-bottom:0;
+}
+#nasil-calisir .chat-card b{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  background:var(--brand);
+  color:#061019;
+  font-size:12px;
+}
+#nasil-calisir .chat-card p span{
+  display:block;
+  max-width:520px;
+  border-radius:8px;
+  background:#202a38;
+  padding:13px 16px;
+}
+#nasil-calisir .chat-card .user{
+  grid-template-columns:minmax(0,1fr) 38px;
+  margin-left:70px;
+}
+#nasil-calisir .chat-card .user span{
+  background:rgba(18,200,191,.12);
+}
+#nasil-calisir .chat-card .user b{
+  background:#2b3444;
+  color:rgba(255,255,255,.72);
+}
+@media(max-width:1320px){
+  #nasil-calisir .split{
+    grid-template-columns:1fr;
+  }
+  #nasil-calisir .split>div:first-child,
+  #nasil-calisir .process-panel{
+    max-width:760px;
+    justify-self:center;
+  }
+}
+@media(max-width:760px){
+  #nasil-calisir .split>div:first-child,
+  #nasil-calisir .process-panel{
+    max-width:none;
+  }
+  #nasil-calisir .steps article{
+    min-height:auto;
+  }
+}

@@ -3,6 +3,10 @@ function json_lines(?string $value): string {
     $items = json_decode($value ?: '[]', true) ?: [];
     return implode("\n", $items);
 }
+function pretty_json(string $value): string {
+    $decoded = json_decode($value, true);
+    return json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?: $value;
+}
 ?>
 <header class="admin-header">
     <a class="brand" href="<?= url('/') ?>"><span>pratik</span><strong>gümrük</strong></a>
@@ -11,6 +15,21 @@ function json_lines(?string $value): string {
 <main class="admin-main">
     <?php if (!empty($_SESSION['flash'])): ?><p class="flash"><?= e($_SESSION['flash']); unset($_SESSION['flash']); ?></p><?php endif; ?>
     <h1>İçerik Yönetimi</h1>
+
+    <section class="panel">
+        <h2>Landing Sayfası Blokları</h2>
+        <p class="help">Hero, kullananlar, nasıl çalışır adımları, rakip karşılaştırması, güvenlik ve fiyatlandırma gibi ana alanları buradan değiştirebilirsiniz. Türkçe karakterler korunur. JSON formatı bozulursa kayıt yapılmaz.</p>
+        <form method="post" action="<?= admin_url('landing/save') ?>" class="landing-form">
+            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+            <?php foreach ($landingRows as $row): ?>
+                <details class="edit-row">
+                    <summary><?= e($row['title']) ?> <small><?= e($row['block_key']) ?></small></summary>
+                    <label><?= e($row['title']) ?><textarea name="payload[<?= (int) $row['id'] ?>]" rows="14" spellcheck="false"><?= e(pretty_json($row['payload'])) ?></textarea></label>
+                </details>
+            <?php endforeach; ?>
+            <button>Landing bloklarını kaydet</button>
+        </form>
+    </section>
 
     <section class="panel">
         <h2>Modüller</h2>
