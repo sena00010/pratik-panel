@@ -1,0 +1,3 @@
+storage/cache/*.cache.php
+storage/logs/*.log
+.DS_Store
