@@ -16,11 +16,6 @@ PHP + MySQL ile hazırlanmış tanıtım sitesi, blog, modül detay sayfaları v
 
 Yönetim paneli yolu `config/app.php` içindeki `admin_path` alanından değiştirilebilir.
 
-İlk giriş bilgileri:
-
-- Kullanıcı adı: `admin`
-- Şifre: `PratikGumruk2026`
-
 Girişten sonra şifreyi veritabanındaki `admin_users.password_hash` alanını güncelleyerek değiştirin.
 
 ## İçerik
