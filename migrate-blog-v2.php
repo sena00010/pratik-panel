@@ -15,7 +15,7 @@ try {
     $pdo->exec("ALTER TABLE blog_posts ADD COLUMN meta_title VARCHAR(220) DEFAULT NULL AFTER cover_image");
     echo "[+] blog_posts.meta_title added\n";
 } catch (PDOException $e) {
-    if (str_contains($e->getMessage(), 'Duplicate column')) echo "[=] blog_posts.meta_title already exists\n";
+    if (strpos($e->getMessage(), 'Duplicate column') !== false) echo "[=] blog_posts.meta_title already exists\n";
     else throw $e;
 }
 
@@ -24,7 +24,7 @@ try {
     $pdo->exec("ALTER TABLE blog_posts ADD COLUMN meta_description VARCHAR(320) DEFAULT NULL AFTER meta_title");
     echo "[+] blog_posts.meta_description added\n";
 } catch (PDOException $e) {
-    if (str_contains($e->getMessage(), 'Duplicate column')) echo "[=] blog_posts.meta_description already exists\n";
+    if (strpos($e->getMessage(), 'Duplicate column') !== false) echo "[=] blog_posts.meta_description already exists\n";
     else throw $e;
 }
 
@@ -37,7 +37,7 @@ try {
     $pdo->exec("UPDATE blog_posts SET status = 'draft' WHERE is_published = 0");
     echo "[+] Existing posts migrated to new status system\n";
 } catch (PDOException $e) {
-    if (str_contains($e->getMessage(), 'Duplicate column')) echo "[=] blog_posts.status already exists\n";
+    if (strpos($e->getMessage(), 'Duplicate column') !== false) echo "[=] blog_posts.status already exists\n";
     else throw $e;
 }
 
@@ -46,7 +46,7 @@ try {
     $pdo->exec("ALTER TABLE admin_users ADD COLUMN auto_approve TINYINT(1) DEFAULT 0 AFTER display_name");
     echo "[+] admin_users.auto_approve added\n";
 } catch (PDOException $e) {
-    if (str_contains($e->getMessage(), 'Duplicate column')) echo "[=] admin_users.auto_approve already exists\n";
+    if (strpos($e->getMessage(), 'Duplicate column') !== false) echo "[=] admin_users.auto_approve already exists\n";
     else throw $e;
 }
 
