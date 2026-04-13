@@ -313,12 +313,14 @@ if (!$spBlock) $spBlock = ['eyebrow' => 'SOSYAL KANIT', 'title' => 'Türkiye gen
                     <span id="liveNotifyText"></span>
                 </div>
             </div>
-            <div class="map-legend">
-                <span><i style="background:#12c8bf"></i> 500+ kullanıcı</span>
-                <span><i style="background:#3b82f6"></i> 100–500</span>
-                <span><i style="background:#64748b"></i> 50–100</span>
+            <div class="map-footer-info">
+                <div class="map-legend">
+                    <span><i style="background:#12c8bf;box-shadow:0 0 8px #12c8bf"></i> 500+ kullanıcı</span>
+                    <span><i style="background:#3b82f6;box-shadow:0 0 8px #3b82f6"></i> 100–500</span>
+                    <span><i style="background:#64748b;box-shadow:0 0 8px #64748b"></i> 50–100</span>
+                </div>
+                <div class="map-cities"><?= e($spBlock['cities'] ?? '81 ilden aktif kullanım · İstanbul, Ankara, İzmir öncü') ?></div>
             </div>
-            <p class="map-cities"><?= e($spBlock['cities'] ?? '81 ilden aktif kullanım · İstanbul, Ankara, İzmir öncü') ?></p>
         </div>
         <div class="testimonials-cards">
             <?php foreach ($testimonials as $t): ?>
