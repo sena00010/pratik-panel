@@ -599,3 +599,9 @@ body {
         border-bottom: none;
     }
 }
+
+@media (max-width: 768px) {
+    .desktop-logout { display: none !important; }
+    .mobile-logout { display: block !important; }
+    .header-right { gap: 12px !important; }
+}

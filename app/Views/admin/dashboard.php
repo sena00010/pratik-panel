@@ -28,12 +28,13 @@ if (!is_array($trustedData)) $trustedData = [];
 ?>
 <header class="admin-header">
     <a class="brand" href="<?= url('/') ?>"><span>pratik</span><strong>gümrük</strong></a>
-    <div class="header-right"><button class="mobile-menu-btn" onclick="document.body.classList.toggle('nav-open')" aria-label="Menü"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    <div class="header-right">
         <button class="theme-toggle" onclick="toggleTheme()" title="Tema değiştir" aria-label="Tema değiştir">
             <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
             <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <form method="post" action="<?= admin_url('logout') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><button class="btn-logout">Çıkış</button></form>
+        <form class="desktop-logout" method="post" action="<?= admin_url('logout') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><button class="btn-logout">Çıkış</button></form>
+        <button class="mobile-menu-btn" onclick="document.body.classList.toggle('nav-open')" aria-label="Menü"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
     </div>
 </header>
 <nav class="admin-nav">
@@ -48,6 +49,7 @@ if (!is_array($trustedData)) $trustedData = [];
     <a href="#sec-testimonials">💬 Yorumlar</a>
     <a href="#sec-seo">🔍 SEO</a>
     <a href="#sec-users">🔐 Kullanıcılar</a>
+    <form class="mobile-logout" method="post" action="<?= admin_url('logout') ?>" style="margin:8px 16px; display:none;"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><button class="btn-logout" style="width:100%; border-radius:8px; padding:12px; background:var(--danger); color:#fff; border:0; font-weight:800; cursor:pointer;">Çıkış Yap</button></form>
 </nav>
 <main class="admin-main">
     <?php if (!empty($_SESSION['flash'])): ?><div class="flash"><?= e($_SESSION['flash']); unset($_SESSION['flash']); ?></div><?php endif; ?>
@@ -361,6 +363,7 @@ if (!is_array($trustedData)) $trustedData = [];
         </details>
     </section>
 </main>
+
 
 
 
