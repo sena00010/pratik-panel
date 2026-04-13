@@ -118,7 +118,7 @@ $finalCta = $blocks['final_cta'] ?? [
 </section>
 
 <section class="section light-section" id="moduller">
-    <div class="section-head">
+    <div class="section-head centered">
         <span class="eyebrow"><?= e($moduleCopy['eyebrow'] ?? '') ?></span>
         <h2><?= e($moduleCopy['title'] ?? '') ?></h2>
         <p><?= e($moduleCopy['description'] ?? '') ?></p>
@@ -380,7 +380,7 @@ if (!$spBlock) $spBlock = ['eyebrow' => 'SOSYAL KANIT', 'title' => 'Türkiye gen
 
 <?php if (!empty($posts)): ?>
 <section class="section blog-preview">
-    <div class="section-head">
+    <div class="section-head centered">
         <span class="eyebrow">BLOG</span>
         <h2>Gümrük gündemi</h2>
     </div>
