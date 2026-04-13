@@ -318,12 +318,18 @@ if (!is_array($trustedData)) $trustedData = [];
             <?php foreach ($adminUsers as $u): ?>
                 <div class="admin-user-row">
                     <div class="admin-user-info">
-                        <span class="admin-user-avatar"><?= strtoupper(mb_substr($u['username'], 0, 1, 'UTF-8')) ?></span>
-                        <div>
-                            <strong><?= e($u['username']) ?></strong>
-                            <small style="margin-left:8px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;background:<?= ($u['role']??'admin')==='blogger'?'rgba(229,160,25,.15)':'rgba(18,200,191,.15)' ?>;color:<?= ($u['role']??'admin')==='blogger'?'#e5a019':'#12c8bf' ?>"><?= e(ucfirst($u['role'] ?? 'admin')) ?></small>
-                            <?php if (!empty($u['display_name'])): ?><br><small style="color:var(--text-muted)"><?= e($u['display_name']) ?></small><?php endif; ?>
-                            <br><small><?= e($u['created_at']) ?></small>
+                        <?php if (!empty($u['profile_photo'])): ?>
+                            <img src="<?= e($u['profile_photo']) ?>" class="admin-user-avatar" style="object-fit:cover;border:2px solid rgba(18,200,191,0.2)" alt="">
+                        <?php else: ?>
+                            <span class="admin-user-avatar"><?= strtoupper(mb_substr($u['display_name'] ?: $u['username'], 0, 1, 'UTF-8')) ?></span>
+                        <?php endif; ?>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <strong style="font-size:15px;color:var(--text);letter-spacing:-.01em"><?= e($u['username']) ?></strong>
+                                <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:900;letter-spacing:.03em;text-transform:uppercase;background:<?= ($u['role']??'admin')==='blogger'?'linear-gradient(135deg,rgba(229,160,25,.1),rgba(229,160,25,.16))':'linear-gradient(135deg,rgba(18,200,191,.1),rgba(18,200,191,.16))' ?>;color:<?= ($u['role']??'admin')==='blogger'?'#e5a019':'#12c8bf' ?>;border:1px solid <?= ($u['role']??'admin')==='blogger'?'rgba(229,160,25,.2)':'rgba(18,200,191,.2)' ?>;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);text-shadow:0 1px 2px rgba(0,0,0,.1);backdrop-filter:blur(4px)"><?= ($u['role'] ?? 'admin') === 'blogger' ? 'Blogger' : 'Admin' ?></span>
+                            </div>
+                            <?php if (!empty($u['display_name'])): ?><div style="font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><?= e($u['display_name']) ?></div><?php endif; ?>
+                            <div style="font-size:12px;color:rgba(128,128,128,.6);display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><?= e(date('d M Y, H:i', strtotime($u['created_at']))) ?></div>
                         </div>
                     </div>
                     <?php if ((int)$u['id'] !== (int)($_SESSION['admin_id'] ?? 0)): ?>
