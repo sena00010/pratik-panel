@@ -86,7 +86,7 @@
                     </div>
                     <div class="blog-post-actions">
                         <button type="button" class="btn-edit" onclick='openEditor(<?= json_encode($post, JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE) ?>)'>Düzenle</button>
-                        <form method="post" action="<?= admin_url('blogs/delete') ?>" onsubmit="return confirm('Bu yazıyı silmek istediğinize emin misiniz?')" style="display:inline">
+                        <form method="post" action="<?= admin_url('blogs/delete') ?>" onsubmit="event.preventDefault(); pgConfirm('Bu yazıyı silmek istediğinize emin misiniz?', () => this.submit(), 'Yazıyı Sil')" style="display:inline">
                             <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                             <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
                             <button class="btn-delete">Sil</button>

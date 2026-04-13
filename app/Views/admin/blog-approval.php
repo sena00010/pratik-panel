@@ -9,6 +9,10 @@ $statusLabels = [
 <header class="admin-header">
     <a class="brand" href="<?= url('/') ?>"><span>pratik</span><strong>gümrük</strong></a>
     <div class="header-right">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Tema değiştir" aria-label="Tema değiştir">
+            <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
         <a href="<?= admin_url('') ?>" style="color:var(--text-muted);text-decoration:none;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;background:var(--bg-panel);border:1px solid var(--border)">← Panele Dön</a>
         <form method="post" action="<?= admin_url('logout') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><button class="btn-logout">Çıkış</button></form>
     </div>
@@ -66,8 +70,8 @@ $statusLabels = [
                 </div>
 
                 <div style="display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--border);background:rgba(0,0,0,.02)">
-                    <form method="post" action="<?= admin_url('blogs/approve') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button style="border:0;border-radius:10px;background:#05ad71;color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 4px 16px rgba(5,173,113,.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">✅ Onayla & Yayınla</button></form>
-                    <form method="post" action="<?= admin_url('blogs/reject') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button style="border:0;border-radius:10px;background:var(--danger);color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''">❌ Reddet</button></form>
+                    <form method="post" action="<?= admin_url('blogs/approve') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="submit" style="border:0;border-radius:10px;background:#05ad71;color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 4px 16px rgba(5,173,113,.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">✅ Onayla & Yayınla</button></form>
+                    <form method="post" action="<?= admin_url('blogs/reject') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="button" style="border:0;border-radius:10px;background:var(--danger);color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''" onclick="pgConfirm('Bu yazıyı reddetmek istediğinize emin misiniz? Blogger, panelinde bunu görecektir.', () => this.form.submit(), 'Blog Yazısını Reddet')">❌ Reddet</button></form>
                 </div>
             </article>
             <?php endforeach; ?>
@@ -97,10 +101,10 @@ $statusLabels = [
                     <td style="padding:12px 16px;text-align:right;color:var(--text-muted);font-size:12px"><?= !empty($ap['created_at']) ? date('d.m.Y', strtotime($ap['created_at'])) : '-' ?></td>
                     <td style="padding:12px 16px;text-align:right">
                         <?php if (($ap['status'] ?? '') === 'approved' || ($ap['status'] ?? '') === 'pending'): ?>
-                        <form method="post" action="<?= admin_url('blogs/reject') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button style="border:0;background:rgba(239,68,68,.1);color:#ef4444;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer" onclick="return confirm('Bu yazıyı yayından kaldırmak / reddetmek istediğinize emin misiniz?')">❌ Kaldır / Reddet</button></form>
+                        <form method="post" action="<?= admin_url('blogs/reject') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button type="button" style="border:0;background:rgba(239,68,68,.1);color:#ef4444;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer" onclick="pgConfirm('Bu yazıyı yayından kaldırmak / reddetmek istediğinize emin misiniz?', () => this.form.submit(), 'Yayından Kaldır / Reddet')">❌ Kaldır / Reddet</button></form>
                         <?php endif; ?>
                         <?php if (($ap['status'] ?? '') === 'rejected' || ($ap['status'] ?? '') === 'draft'): ?>
-                        <form method="post" action="<?= admin_url('blogs/approve') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button style="border:0;background:rgba(5,173,113,.1);color:#05ad71;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer">✅ Onayla & Yayınla</button></form>
+                        <form method="post" action="<?= admin_url('blogs/approve') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button type="submit" style="border:0;background:rgba(5,173,113,.1);color:#05ad71;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer">✅ Onayla & Yayınla</button></form>
                         <?php endif; ?>
                     </td>
                 </tr>
