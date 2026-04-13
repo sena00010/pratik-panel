@@ -55,7 +55,10 @@ final class AdminController
 
     public function blogApprovalPage(): void
     {
-        $this->requireAuth();
+        if (!$this->isLoggedIn()) {
+            redirect(config('app.admin_path'));
+            return;
+        }
         if (($_SESSION['admin_role'] ?? '') === 'blogger') {
             header('Location: ' . admin_url(''));
             exit;
