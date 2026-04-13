@@ -553,3 +553,49 @@ body {
  . p g - m o d a l - a c t i o n s   . b t n - c o n f i r m : h o v e r   {   f i l t e r :   b r i g h t n e s s ( 1 . 1 ) ;   } 
   
  
+/* Mobile Navigation Hamburger Menu */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    margin-right: 8px;
+    transition: background 0.2s;
+}
+.mobile-menu-btn:hover {
+    background: rgba(128,128,128,0.1);
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
+    .admin-nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 57px;
+        left: 0;
+        right: 0;
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border);
+        padding: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    /* When body has .nav-open, we display the .admin-nav */
+    .nav-open .admin-nav {
+        display: flex;
+    }
+    .admin-nav a {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        border-bottom: 1px solid rgba(128,128,128,0.05);
+    }
+    .admin-nav a:last-child {
+        border-bottom: none;
+    }
+}
