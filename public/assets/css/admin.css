@@ -1,4 +1,4 @@
-/* ===== ADMIN PANEL CSS - Dark/Light Mode ===== */
+﻿/* ===== ADMIN PANEL CSS - Dark/Light Mode ===== */
 
 /* --- Theme Variables --- */
 :root,
@@ -152,7 +152,8 @@ body {
     cursor: pointer;
     transition: all .22s;
 }
-.login-toggle input { display: none; }
+.login-toggle input { display: none;
+        position: static !important; }
 .login-toggle input:checked + span {
     /* parent label gets styled via JS */
 }
@@ -178,7 +179,8 @@ body {
     z-index: 9;
     flex-wrap: nowrap;
 }
-.admin-nav::-webkit-scrollbar { display: none; }
+.admin-nav::-webkit-scrollbar { display: none;
+        position: static !important; }
 .admin-nav a {
     display: flex;
     align-items: center;
@@ -278,8 +280,10 @@ body {
 
 /* Sun/Moon toggle visibility */
 [data-theme="dark"] .icon-sun { display: block; }
-[data-theme="dark"] .icon-moon { display: none; }
-[data-theme="light"] .icon-sun { display: none; }
+[data-theme="dark"] .icon-moon { display: none;
+        position: static !important; }
+[data-theme="light"] .icon-sun { display: none;
+        position: static !important; }
 [data-theme="light"] .icon-moon { display: block; }
 
 .btn-logout {
@@ -556,6 +560,7 @@ body {
 /* Mobile Navigation Hamburger Menu */
 .mobile-menu-btn {
     display: none;
+        position: static !important;
     background: transparent;
     border: none;
     color: var(--text);
@@ -575,8 +580,9 @@ body {
     }
     .admin-nav {
         display: none;
+        position: static !important;
         flex-direction: column;
-        position: absolute;
+        /* position: absolute; */
         top: 57px;
         left: 0;
         right: 0;
@@ -605,3 +611,6 @@ body {
     .mobile-logout { display: block !important; }
     .header-right { gap: 12px !important; }
 }
+
+
+
