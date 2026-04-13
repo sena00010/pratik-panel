@@ -104,8 +104,10 @@ $finalCta = $blocks['final_cta'] ?? [
 </section>
 
 <section class="trusted">
-    <strong>KULLANANLAR</strong>
-    <?php foreach ($trusted as $brand): ?><span><?= e((string) $brand) ?></span><?php endforeach; ?>
+    <div class="marquee-track">
+        <?php foreach ($trusted as $brand): ?><span><?= e((string) $brand) ?></span><?php endforeach; ?>
+        <?php foreach ($trusted as $brand): ?><span><?= e((string) $brand) ?></span><?php endforeach; ?>
+    </div>
 </section>
 
 <section class="section light-section" id="moduller">

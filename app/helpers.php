@@ -28,7 +28,12 @@ function e(?string $value): string
 
 function url(string $path = ''): string
 {
-    $base = rtrim(config('app.base_url', ''), '/');
+    if (PHP_SAPI === 'cli-server' || (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)) {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $base = $scheme . '://' . $_SERVER['HTTP_HOST'];
+    } else {
+        $base = rtrim(config('app.base_url', ''), '/');
+    }
     return $base . '/' . ltrim($path, '/');
 }
 
@@ -39,7 +44,7 @@ function admin_url(string $path = ''): string
 
 function asset(string $path): string
 {
-    return url('public/assets/' . ltrim($path, '/'));
+    return url('assets/' . ltrim($path, '/'));
 }
 
 function redirect(string $path): never

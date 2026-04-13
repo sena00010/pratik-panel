@@ -10,13 +10,15 @@ $ogImage = $seo['og_image'] ?? '';
 <html lang="tr">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title><?= e($metaTitle) ?></title>
     <meta name="description" content="<?= e($metaDescription) ?>">
     <meta name="keywords" content="<?= e($metaKeywords) ?>">
     <meta property="og:title" content="<?= e($metaTitle) ?>">
     <meta property="og:description" content="<?= e($metaDescription) ?>">
     <?php if ($ogImage): ?><meta property="og:image" content="<?= e($ogImage) ?>"><?php endif; ?>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Inter+Tight:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -37,12 +39,37 @@ $ogImage = $seo['og_image'] ?? '';
         <a href="<?= url('/blog') ?>">Blog</a>
     </nav>
     <div class="header-actions">
-        <a class="btn btn-ghost" href="#giris">Giriş Yap</a>
+        <a class="btn btn-ghost" href="<?= url(config('app.admin_path')) ?>">Giriş Yap</a>
         <a class="btn btn-primary" href="<?= url('/#fiyatlandirma') ?>">Ücretsiz Deneyin</a>
     </div>
 </header>
 <main>
     <?= $content ?>
 </main>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="bottom-nav" aria-label="Mobil navigasyon">
+    <a href="<?= url('/') ?>">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Ana Sayfa</span>
+    </a>
+    <a href="<?= url('/#moduller') ?>">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Modüller</span>
+    </a>
+    <a href="<?= url('/#fiyatlandirma') ?>">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Fiyat</span>
+    </a>
+    <a href="<?= url('/#sss') ?>">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>SSS</span>
+    </a>
+    <a href="<?= url(config('app.admin_path')) ?>">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Giriş</span>
+    </a>
+</nav>
+
 </body>
 </html>

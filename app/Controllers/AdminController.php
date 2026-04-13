@@ -24,6 +24,7 @@ final class AdminController
             'posts' => $this->repo->blogPosts(false),
             'seoRows' => Database::pdo()->query('SELECT * FROM seo_meta ORDER BY page ASC, slug ASC')->fetchAll(),
             'landingRows' => Database::pdo()->query('SELECT * FROM landing_blocks ORDER BY id ASC')->fetchAll(),
+            'adminUsers' => Database::pdo()->query('SELECT id, username, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
         ], 'layouts/admin');
     }
 
@@ -106,15 +107,55 @@ final class AdminController
         $slug = $data['slug'] !== '' ? slugify($data['slug']) : slugify($data['title']);
         $publishedAt = $data['published_at'] !== '' ? $data['published_at'] : date('Y-m-d H:i:s');
 
+        // Handle cover image upload
+        $coverImage = $data['cover_image'];
+        if (!empty($_FILES['cover_image_file']['tmp_name']) && $_FILES['cover_image_file']['error'] === UPLOAD_ERR_OK) {
+            $coverImage = $this->handleUpload($_FILES['cover_image_file']);
+        }
+
         if (!empty($_POST['id'])) {
             $stmt = Database::pdo()->prepare('UPDATE blog_posts SET title=?, slug=?, summary=?, content=?, cover_image=?, published_at=?, is_published=? WHERE id=?');
-            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $data['cover_image'], $publishedAt, (int) !empty($data['is_published']), (int) $_POST['id']]);
+            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published']), (int) $_POST['id']]);
         } else {
             $stmt = Database::pdo()->prepare('INSERT INTO blog_posts (title, slug, summary, content, cover_image, published_at, is_published) VALUES (?,?,?,?,?,?,?)');
-            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $data['cover_image'], $publishedAt, (int) !empty($data['is_published'])]);
+            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published'])]);
         }
 
         $this->done('Blog yazısı kaydedildi.');
+    }
+
+    public function uploadImage(): void
+    {
+        $this->guard();
+        header('Content-Type: application/json');
+
+        if (empty($_FILES['image']['tmp_name']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['error' => 'Dosya yüklenemedi.']);
+            exit;
+        }
+
+        $path = $this->handleUpload($_FILES['image']);
+        echo json_encode(['url' => asset($path)]);
+        exit;
+    }
+
+    private function handleUpload(array $file): string
+    {
+        $uploadDir = __DIR__ . '/../../public/assets/uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        if (!in_array($ext, $allowed, true)) {
+            $_SESSION['flash'] = 'Desteklenmeyen dosya formatı: ' . $ext;
+            redirect(config('app.admin_path'));
+        }
+
+        $filename = uniqid('img_', true) . '.' . $ext;
+        move_uploaded_file($file['tmp_name'], $uploadDir . $filename);
+        return 'uploads/' . $filename;
     }
 
     public function deleteBlog(): void
@@ -146,6 +187,16 @@ final class AdminController
         $this->guard();
 
         try {
+            // Handle structured hero inputs
+            foreach ($_POST['landing_fields'] ?? [] as $id => $fields) {
+                $id = (int) $id;
+                if ($id <= 0) continue;
+                $payload = json_encode($fields, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+                $stmt = Database::pdo()->prepare('UPDATE landing_blocks SET payload = ? WHERE id = ?');
+                $stmt->execute([$payload, $id]);
+            }
+
+            // Handle raw JSON payloads (fallback for non-hero blocks)
             foreach ($_POST['payload'] ?? [] as $id => $payload) {
                 $id = (int) $id;
                 $payload = trim((string) $payload);
@@ -163,6 +214,45 @@ final class AdminController
         }
 
         $this->done('Landing sayfası blokları güncellendi.');
+    }
+
+    public function saveAdmin(): void
+    {
+        $this->guard();
+        $username = trim((string) ($_POST['username'] ?? ''));
+        $password = (string) ($_POST['password'] ?? '');
+
+        if ($username === '' || $password === '') {
+            $_SESSION['flash'] = 'Kullanıcı adı ve şifre gereklidir.';
+            redirect(config('app.admin_path'));
+        }
+
+        $existing = $this->repo->adminUser($username);
+        if ($existing) {
+            $_SESSION['flash'] = 'Bu kullanıcı adı zaten mevcut.';
+            redirect(config('app.admin_path'));
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = Database::pdo()->prepare('INSERT INTO admin_users (username, password_hash, created_at) VALUES (?, ?, NOW())');
+        $stmt->execute([$username, $hash]);
+
+        $this->done('Yeni admin kullanıcı oluşturuldu.');
+    }
+
+    public function deleteAdmin(): void
+    {
+        $this->guard();
+        $id = (int) ($_POST['id'] ?? 0);
+
+        // Prevent deleting yourself
+        if ($id === (int) ($_SESSION['admin_id'] ?? 0)) {
+            $_SESSION['flash'] = 'Kendi hesabınızı silemezsiniz.';
+            redirect(config('app.admin_path'));
+        }
+
+        Database::pdo()->prepare('DELETE FROM admin_users WHERE id = ?')->execute([$id]);
+        $this->done('Admin kullanıcı silindi.');
     }
 
     private function isLoggedIn(): bool

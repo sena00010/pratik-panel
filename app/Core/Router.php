@@ -5,12 +5,12 @@ final class Router
 {
     private array $routes = [];
 
-    public function get(string $path, array $handler): void
+    public function get(string $path, $handler): void
     {
         $this->routes['GET'][] = [$path, $handler];
     }
 
-    public function post(string $path, array $handler): void
+    public function post(string $path, $handler): void
     {
         $this->routes['POST'][] = [$path, $handler];
     }
@@ -22,15 +22,19 @@ final class Router
         }
 
         $uri = '/' . trim($uri, '/');
-        if ($uri !== '/' && str_starts_with($uri, '/index.php/')) {
+        if ($uri !== '/' && strpos($uri, '/index.php/') === 0) {
             $uri = substr($uri, 10);
         }
 
         foreach ($this->routes[$method] ?? [] as [$path, $handler]) {
             $params = $this->match($path, $uri);
             if ($params !== null) {
-                [$class, $action] = $handler;
-                (new $class())->$action(...$params);
+                if (is_callable($handler) && !is_array($handler)) {
+                    $handler(...$params);
+                } else {
+                    [$class, $action] = $handler;
+                    (new $class())->$action(...$params);
+                }
                 return;
             }
         }

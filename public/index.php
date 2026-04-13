@@ -11,6 +11,7 @@ $router->get('/blog/{slug}', [PublicController::class, 'blogDetail']);
 $router->get('/modul/{slug}', [PublicController::class, 'moduleDetail']);
 
 $adminPath = config('app.admin_path');
+$router->get('/login', function() use ($adminPath) { redirect($adminPath); });
 $router->get($adminPath, [AdminController::class, 'dashboard']);
 $router->post($adminPath . '/login', [AdminController::class, 'login']);
 $router->post($adminPath . '/logout', [AdminController::class, 'logout']);
@@ -22,5 +23,8 @@ $router->post($adminPath . '/blogs/save', [AdminController::class, 'saveBlog']);
 $router->post($adminPath . '/blogs/delete', [AdminController::class, 'deleteBlog']);
 $router->post($adminPath . '/seo/save', [AdminController::class, 'saveSeo']);
 $router->post($adminPath . '/landing/save', [AdminController::class, 'saveLanding']);
+$router->post($adminPath . '/admins/save', [AdminController::class, 'saveAdmin']);
+$router->post($adminPath . '/admins/delete', [AdminController::class, 'deleteAdmin']);
+$router->post($adminPath . '/upload/image', [AdminController::class, 'uploadImage']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');

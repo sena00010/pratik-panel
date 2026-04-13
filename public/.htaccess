@@ -3,9 +3,18 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+
+    # If the requested file or directory exists, serve it directly
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [QSA,L]
+
+    # Route everything else through index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# LiteSpeed specific rewrite (no IfModule needed, LiteSpeed supports mod_rewrite natively)
+<IfModule !mod_rewrite.c>
+    FallbackResource /index.php
 </IfModule>
 
 <IfModule mod_headers.c>

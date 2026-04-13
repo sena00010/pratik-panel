@@ -1,7 +1,8 @@
 <?php $seo = $seo ?? ['meta_title' => 'Yönetim']; ?>
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('admin-theme') || 'dark');</script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($seo['meta_title'] ?? 'Yönetim') ?> · Pratik Gümrük</title>
