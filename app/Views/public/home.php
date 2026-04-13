@@ -89,15 +89,22 @@ $finalCta = $blocks['final_cta'] ?? [
             <a class="btn btn-primary btn-large" href="#fiyatlandirma"><?= e($hero['primary_button'] ?? 'Ücretsiz Başlayın') ?></a>
             <a class="btn btn-dark-outline btn-large" href="#nasil-calisir"><?= e($hero['secondary_button'] ?? 'Demo İzleyin →') ?></a>
         </div>
-        <div class="terminal-card" aria-label="GTİP asistanı önizleme">
-            <div class="window-dots"><span></span><span></span><span></span></div>
-            <small>pratikgümrük · GTİP Asistanı</small>
-            <div class="search-line">Kompresörsüz evaporatif hava soğutucu, fan + pompa</div>
-            <div class="chips"><span>8479.89.97.00.19</span><span>Fasıl 84</span><span>GV: %3.7</span><span>KDV: %20</span><span>İGV: %20</span></div>
-            <div class="result-strip">
-                <div><b>8479.89.97.00.19</b><span>Güven skoru: %87</span></div>
-                <div><b>%43.7</b><span>CIF üzerinden</span></div>
-                <div><b>4 karar</b><span>Bakanlık onayı</span></div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <strong>97K+</strong>
+                <span>GTİP POZİSYONU</span>
+            </div>
+            <div class="hero-stat">
+                <strong>370K+</strong>
+                <span>BTB EMSAL KARAR</span>
+            </div>
+            <div class="hero-stat">
+                <strong>8</strong>
+                <span>RESMİ ENTEGRASYON</span>
+            </div>
+            <div class="hero-stat">
+                <strong>%98.2</strong>
+                <span>UZMAN ONAYI</span>
             </div>
         </div>
     </div>

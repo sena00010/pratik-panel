@@ -664,6 +664,69 @@ h1,h2,h3,
   }
 }
 
+/* ─── Hero Stats Strip ─── */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto;
+  width: min(900px, 90vw);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 48px;
+}
+
+.hero-stat {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.hero-stat:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.hero-stat strong {
+  display: block;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 950;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.hero-stat span {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .hero-stats {
+    flex-wrap: wrap;
+    gap: 24px 0;
+    padding-top: 32px;
+  }
+  .hero-stat {
+    flex: 0 0 50%;
+  }
+  .hero-stat:nth-child(2)::after {
+    display: none;
+  }
+  .hero-stat strong {
+    font-size: 28px;
+  }
+}
+
 /* ─── Blog Grid Modern ─── */
 @keyframes blogCardIn {
   from { opacity: 0; transform: translateY(32px); }
