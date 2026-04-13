@@ -845,7 +845,12 @@ h1,h2,h3,
 
 /* Page hero with subtle gradient mesh */
 .page-hero.dark-grid {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-color: #07111f;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-size: 82px 82px, 82px 82px, 100% 100%;
   text-align: center;
   padding: 100px 24px 80px;
   position: relative;
@@ -872,7 +877,7 @@ h1,h2,h3,
 }
 
 .page-hero.dark-grid h1 {
-  font-size: clamp(48px, 7vw, 78px);
+  font-size: clamp(52px, 8vw, 88px);
   font-weight: 950;
   margin: 20px auto 18px;
   position: relative;
