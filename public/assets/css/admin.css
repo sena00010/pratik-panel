@@ -855,3 +855,18 @@ body {
 .pg-modal-actions .btn-cancel:hover { background: rgba(100,116,139,.2); }
 .pg-modal-actions .btn-confirm { background: var(--brand); color: #021018; }
 .pg-modal-actions .btn-confirm:hover { filter: brightness(1.1); }
+
+@media (max-width: 480px) {
+    .admin-user-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .admin-user-info {
+        width: 100% !important;
+    }
+    .admin-user-row > div:last-child {
+        width: 100% !important;
+        justify-content: flex-end !important;
+    }
+}
