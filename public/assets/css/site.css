@@ -727,6 +727,128 @@ h1,h2,h3,
   }
 }
 
+/* ─── Process Timeline (Horizontal Steps) ─── */
+.process-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.process-timeline__step {
+  flex: 1;
+  text-align: center;
+  padding: 0 20px;
+  position: relative;
+}
+
+.process-timeline__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(18,200,191,0.12);
+  border: 1px solid rgba(18,200,191,0.3);
+  color: var(--brand, #12c8bf);
+  font-size: 14px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.process-timeline__step h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.process-timeline__step p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 220px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.process-timeline__arrow {
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+
+/* Override section padding for this compact layout */
+#nasil-calisir.section {
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+@media (max-width: 760px) {
+  .process-timeline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .process-timeline__step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-rows: auto auto;
+    text-align: left;
+    padding: 16px 0;
+    gap: 0 16px;
+    position: relative;
+  }
+
+  .process-timeline__step::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 60px;
+    bottom: -8px;
+    width: 1px;
+    background: rgba(18,200,191,0.15);
+  }
+
+  .process-timeline__step:last-child::before {
+    display: none;
+  }
+
+  .process-timeline__num {
+    grid-row: 1 / 3;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
+  .process-timeline__step h3 {
+    font-size: 16px;
+    align-self: end;
+  }
+
+  .process-timeline__step p {
+    font-size: 13px;
+    max-width: none;
+    margin: 0;
+  }
+
+  .process-timeline__arrow {
+    display: none;
+  }
+
+  #nasil-calisir.section {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+}
+
 /* ─── Blog Grid Modern ─── */
 @keyframes blogCardIn {
   from { opacity: 0; transform: translateY(32px); }

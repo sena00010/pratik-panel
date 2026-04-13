@@ -141,23 +141,35 @@ $finalCta = $blocks['final_cta'] ?? [
 </section>
 
 <section class="section dark-section" id="nasil-calisir">
-    <div class="split">
-        <div>
-            <span class="eyebrow"><?= e($processCopy['eyebrow'] ?? '') ?></span>
-            <h2><?= e($processCopy['title'] ?? '') ?></h2>
-            <p><?= e($processCopy['description'] ?? '') ?></p>
-            <div class="steps" data-process-steps>
-                <?php foreach ($processSteps as $index => $step): ?>
-                    <article class="<?= $index === 0 ? 'active' : '' ?>" tabindex="0" role="button" data-step="<?= $index ?>" data-label="<?= e($step['label'] ?? '') ?>" data-panel="<?= e($step['panel_html'] ?? '') ?>">
-                        <b><?= str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) ?></b>
-                        <div><h3><?= e($step['title']) ?></h3><p><?= e($step['text']) ?></p></div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
+    <div class="process-timeline">
+        <div class="process-timeline__step">
+            <span class="process-timeline__num">01</span>
+            <h3>Giriş Yapın</h3>
+            <p>Ürün adı, görsel, barkod veya link — 7 yöntem, 50+ dil</p>
         </div>
-        <div class="process-panel" data-process-panel>
-            <span data-process-label><?= e($processSteps[0]['label'] ?? '') ?></span>
-            <div data-process-content><?= $processSteps[0]['panel_html'] ?? '' ?></div>
+        <div class="process-timeline__arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="process-timeline__step">
+            <span class="process-timeline__num">02</span>
+            <h3>AI Analiz Eder</h3>
+            <p>370K+ BTB kararı ve mevzuatla çapraz doğrulama</p>
+        </div>
+        <div class="process-timeline__arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="process-timeline__step">
+            <span class="process-timeline__num">03</span>
+            <h3>Kaynaklı Sonuç</h3>
+            <p>Tıklanabilir resmi kaynak, ceza riski simülasyonu ile</p>
+        </div>
+        <div class="process-timeline__arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="process-timeline__step">
+            <span class="process-timeline__num">04</span>
+            <h3>Uzman Onaylar</h3>
+            <p>İsteğe bağlı müşavir doğrulaması, beyanname taslağı</p>
         </div>
     </div>
 </section>
