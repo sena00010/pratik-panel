@@ -42,6 +42,7 @@ if (!is_array($trustedData)) $trustedData = [];
     <a href="#sec-landing">📦 Landing</a>
     <a href="#sec-modules">📌 Modüller</a>
     <a href="#sec-faq">❓ SSS</a>
+    <a href="<?= admin_url('blog-onay') ?>">✍️ Blog Onay<?php if (!empty($pendingPosts)): ?> <span style="background:rgba(229,160,25,.2);color:#e5a019;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:900;margin-left:4px"><?= count($pendingPosts) ?></span><?php endif; ?></a>
     <a href="#sec-integrations">⚡ Entegrasyonlar</a>
     <a href="#sec-audience">👥 Hedef Kitle</a>
     <a href="#sec-testimonials">💬 Yorumlar</a>
@@ -187,6 +188,8 @@ if (!is_array($trustedData)) $trustedData = [];
 
     </section>
 
+
+
     <!-- ========== ENTEGRASYONLAR ========== -->
     <section class="panel" id="sec-integrations">
         <h2>⚡ Entegrasyonlar</h2>
@@ -322,11 +325,22 @@ if (!is_array($trustedData)) $trustedData = [];
                         </div>
                     </div>
                     <?php if ((int)$u['id'] !== (int)($_SESSION['admin_id'] ?? 0)): ?>
-                    <form method="post" action="<?= admin_url('admins/delete') ?>" onsubmit="return confirm('Bu admini silmek istediğinize emin misiniz?')">
-                        <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
-                        <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
-                        <button class="danger-sm">Sil</button>
-                    </form>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <?php if (($u['role'] ?? 'admin') === 'blogger'): ?>
+                        <form method="post" action="<?= admin_url('admins/toggle-approve') ?>" style="display:inline">
+                            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                            <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
+                            <button style="border:1px solid <?= !empty($u['auto_approve']) ? '#05ad71' : 'var(--border)' ?>;background:<?= !empty($u['auto_approve']) ? 'rgba(5,173,113,.1)' : 'transparent' ?>;color:<?= !empty($u['auto_approve']) ? '#05ad71' : 'var(--text-muted)' ?>;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap" title="<?= !empty($u['auto_approve']) ? 'Otomatik onay AKTİF - yazıları onay beklemeden yayınlanır' : 'Otomatik onay KAPALI - yazıları onay bekler' ?>">
+                                <?= !empty($u['auto_approve']) ? '✅ Oto-Onay' : '⏳ Onay Gerekli' ?>
+                            </button>
+                        </form>
+                        <?php endif; ?>
+                        <form method="post" action="<?= admin_url('admins/delete') ?>" onsubmit="return confirm('Bu admini silmek istediğinize emin misiniz?')">
+                            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                            <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
+                            <button class="danger-sm">Sil</button>
+                        </form>
+                    </div>
                     <?php else: ?>
                     <span class="badge-you">Siz</span>
                     <?php endif; ?>
@@ -341,6 +355,7 @@ if (!is_array($trustedData)) $trustedData = [];
                 <label>Şifre<input type="password" name="password" required autocomplete="new-password"></label>
                 <label>Görünen Ad<input name="display_name" placeholder="Blog yazar adı"></label>
                 <label>Rol<select name="role"><option value="admin">Admin</option><option value="blogger">Blogger</option></select></label>
+                <label class="check"><input type="checkbox" name="auto_approve" value="1"> Otomatik Onay (Blogger için)</label>
                 <button>Kullanıcı oluştur</button>
             </form>
         </details>

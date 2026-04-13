@@ -34,18 +34,39 @@ final class AdminController
             return;
         }
 
+        // Pending posts for admin approval queue
+        $pendingPosts = Database::pdo()->query("SELECT bp.*, au.display_name as author_name, au.username as author_username FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id WHERE bp.status = 'pending' ORDER BY bp.created_at DESC")->fetchAll();
+
         View::render('admin/dashboard', [
             'settings' => $this->repo->siteSettings(),
             'modules' => $this->repo->modules(false),
             'faqs' => $this->repo->faqs(false),
             'posts' => $this->repo->blogPosts(false),
+            'pendingPosts' => $pendingPosts,
             'integrations' => $this->repo->integrations(false),
             'audienceCards' => $this->repo->audienceCards(false),
             'testimonials' => $this->repo->testimonials(false),
             'seoRows' => Database::pdo()->query('SELECT * FROM seo_meta ORDER BY page ASC, slug ASC')->fetchAll(),
             'landingRows' => Database::pdo()->query('SELECT * FROM landing_blocks ORDER BY id ASC')->fetchAll(),
-            'adminUsers' => Database::pdo()->query('SELECT id, username, role, display_name, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
+            'adminUsers' => Database::pdo()->query('SELECT id, username, role, display_name, auto_approve, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
             'role' => $role,
+        ], 'layouts/admin');
+    }
+
+    public function blogApprovalPage(): void
+    {
+        $this->requireAuth();
+        if (($_SESSION['admin_role'] ?? '') === 'blogger') {
+            header('Location: ' . admin_url(''));
+            exit;
+        }
+        $pendingPosts = Database::pdo()->query("SELECT bp.*, au.display_name as author_name, au.username as author_username FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id WHERE bp.status = 'pending' ORDER BY bp.created_at DESC")->fetchAll();
+        $allPosts = Database::pdo()->query("SELECT bp.*, au.display_name as author_name, au.username as author_username FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id ORDER BY bp.created_at DESC")->fetchAll();
+
+        View::render('admin/blog-approval', [
+            'pendingPosts' => $pendingPosts,
+            'allPosts' => $allPosts,
+            'role' => $_SESSION['admin_role'] ?? 'admin',
         ], 'layouts/admin');
     }
 
@@ -144,7 +165,7 @@ final class AdminController
     {
         $this->guard();
         $role = $_SESSION['admin_role'] ?? 'admin';
-        $data = $this->postData(['title', 'slug', 'summary', 'content', 'cover_image', 'published_at', 'is_published']);
+        $data = $this->postData(['title', 'slug', 'summary', 'content', 'cover_image', 'meta_title', 'meta_description', 'published_at', 'is_published']);
         $slug = $data['slug'] !== '' ? slugify($data['slug']) : slugify($data['title']);
         $publishedAt = $data['published_at'] !== '' ? $data['published_at'] : date('Y-m-d H:i:s');
         $authorId = (int) ($_SESSION['admin_id'] ?? 0);
@@ -155,25 +176,74 @@ final class AdminController
             $coverImage = $this->handleUpload($_FILES['cover_image_file']);
         }
 
+        // Determine status based on role and auto_approve setting
+        $status = 'draft';
+        if (!empty($data['is_published'])) {
+            if ($role === 'admin') {
+                $status = 'approved';
+            } else {
+                // Check if blogger has auto_approve
+                $autoCheck = Database::pdo()->prepare('SELECT auto_approve FROM admin_users WHERE id = ?');
+                $autoCheck->execute([$authorId]);
+                $autoApprove = (int) ($autoCheck->fetchColumn() ?: 0);
+                $status = $autoApprove ? 'approved' : 'pending';
+            }
+        }
+        $isPublished = ($status === 'approved') ? 1 : 0;
+
         if (!empty($_POST['id'])) {
             // Blogger can only edit their own posts
             if ($role === 'blogger') {
-                $check = Database::pdo()->prepare('SELECT author_id FROM blog_posts WHERE id = ?');
+                $check = Database::pdo()->prepare('SELECT author_id, status FROM blog_posts WHERE id = ?');
                 $check->execute([(int) $_POST['id']]);
                 $existing = $check->fetch();
                 if (!$existing || (int) $existing['author_id'] !== $authorId) {
                     $_SESSION['flash'] = 'Bu yazıyı düzenleme yetkiniz yok.';
                     redirect(config('app.admin_path'));
+                    return;
+                }
+                // If post was approved, editing resets to pending (unless auto_approve)
+                if ($existing['status'] === 'approved' && $status === 'pending') {
+                    $status = 'pending';
                 }
             }
-            $stmt = Database::pdo()->prepare('UPDATE blog_posts SET title=?, slug=?, summary=?, content=?, cover_image=?, published_at=?, is_published=? WHERE id=?');
-            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published']), (int) $_POST['id']]);
+            $stmt = Database::pdo()->prepare('UPDATE blog_posts SET title=?, slug=?, summary=?, content=?, cover_image=?, meta_title=?, meta_description=?, published_at=?, is_published=?, status=?, updated_at=NOW() WHERE id=?');
+            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $data['meta_title'] ?: null, $data['meta_description'] ?: null, $publishedAt, $isPublished, $status, (int) $_POST['id']]);
         } else {
-            $stmt = Database::pdo()->prepare('INSERT INTO blog_posts (title, slug, summary, content, cover_image, published_at, is_published, author_id) VALUES (?,?,?,?,?,?,?,?)');
-            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published']), $authorId]);
+            $stmt = Database::pdo()->prepare('INSERT INTO blog_posts (title, slug, summary, content, cover_image, meta_title, meta_description, published_at, is_published, status, author_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $data['meta_title'] ?: null, $data['meta_description'] ?: null, $publishedAt, $isPublished, $status, $authorId]);
         }
 
-        $this->done('Blog yazısı kaydedildi.');
+        $msg = $status === 'pending' ? 'Blog yazısı kaydedildi ve onay bekliyor.' : 'Blog yazısı kaydedildi.';
+        $this->done($msg);
+    }
+
+    public function approveBlog(): void
+    {
+        $this->guardAdmin();
+        $id = (int) ($_POST['id'] ?? 0);
+        Database::pdo()->prepare('UPDATE blog_posts SET status = "approved", is_published = 1 WHERE id = ?')->execute([$id]);
+        cache_clear();
+        $_SESSION['flash'] = 'Blog yazısı onaylandı ve yayına alındı.';
+        redirect(config('app.admin_path') . '/blog-onay');
+    }
+
+    public function rejectBlog(): void
+    {
+        $this->guardAdmin();
+        $id = (int) ($_POST['id'] ?? 0);
+        Database::pdo()->prepare('UPDATE blog_posts SET status = "rejected", is_published = 0 WHERE id = ?')->execute([$id]);
+        cache_clear();
+        $_SESSION['flash'] = 'Blog yazısı reddedildi.';
+        redirect(config('app.admin_path') . '/blog-onay');
+    }
+
+    public function toggleAutoApprove(): void
+    {
+        $this->guardAdmin();
+        $id = (int) ($_POST['id'] ?? 0);
+        Database::pdo()->prepare('UPDATE admin_users SET auto_approve = IF(auto_approve = 1, 0, 1) WHERE id = ? AND role = "blogger"')->execute([$id]);
+        $this->done('Otomatik onay ayarı güncellendi.');
     }
 
     public function uploadImage(): void
@@ -288,8 +358,9 @@ final class AdminController
         }
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = Database::pdo()->prepare('INSERT INTO admin_users (username, password_hash, role, display_name, created_at) VALUES (?, ?, ?, ?, NOW())');
-        $stmt->execute([$username, $hash, $role, $displayName ?: null]);
+        $autoApprove = !empty($_POST['auto_approve']) ? 1 : 0;
+        $stmt = Database::pdo()->prepare('INSERT INTO admin_users (username, password_hash, role, display_name, auto_approve, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
+        $stmt->execute([$username, $hash, $role, $displayName ?: null, $autoApprove]);
 
         $this->done(($role === 'blogger' ? 'Blogger' : 'Admin') . ' kullanıcı oluşturuldu.');
     }

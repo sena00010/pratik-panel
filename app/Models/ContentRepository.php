@@ -69,14 +69,14 @@ final class ContentRepository
     public function blogPosts(bool $activeOnly = true): array
     {
         return cache_remember('blog_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
-            $sql = 'SELECT * FROM blog_posts' . ($activeOnly ? ' WHERE is_published = 1' : '') . ' ORDER BY published_at DESC, id DESC';
+            $sql = 'SELECT * FROM blog_posts' . ($activeOnly ? " WHERE status = 'approved'" : '') . ' ORDER BY published_at DESC, id DESC';
             return Database::pdo()->query($sql)->fetchAll();
         });
     }
 
     public function blogPost(string $slug): ?array
     {
-        $stmt = Database::pdo()->prepare('SELECT * FROM blog_posts WHERE slug = ? AND is_published = 1 LIMIT 1');
+        $stmt = Database::pdo()->prepare("SELECT * FROM blog_posts WHERE slug = ? AND status = 'approved' LIMIT 1");
         $stmt->execute([$slug]);
         $post = $stmt->fetch();
         return $post ?: null;

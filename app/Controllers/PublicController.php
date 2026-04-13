@@ -60,10 +60,18 @@ final class PublicController
             return;
         }
 
+        $seo = $this->repo->seo('blog_detail', $slug);
+        // Override with post-level SEO if available
+        if (!empty($post['meta_title'])) $seo['meta_title'] = $post['meta_title'];
+        if (!empty($post['meta_description'])) $seo['meta_description'] = $post['meta_description'];
+        // Fallback: use post title as meta_title if nothing set
+        if (empty($seo['meta_title'])) $seo['meta_title'] = $post['title'] . ' | Pratik Gümrük Blog';
+        if (empty($seo['meta_description']) && !empty($post['summary'])) $seo['meta_description'] = mb_substr(strip_tags($post['summary']), 0, 160);
+
         View::render('public/blog-detail', [
             'settings' => $this->repo->siteSettings(),
             'post' => $post,
-            'seo' => $this->repo->seo('blog_detail', $slug),
+            'seo' => $seo,
         ]);
     }
 

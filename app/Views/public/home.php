@@ -293,14 +293,25 @@ if (!$spBlock) $spBlock = ['eyebrow' => 'SOSYAL KANIT', 'title' => 'Türkiye gen
         <div class="testimonials-map">
             <div class="map-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg> İL BAZLI KULLANIM YOĞUNLUĞU</div>
             <div class="turkey-map-visual">
-                <div class="map-dot dot-istanbul" style="--size:18px;--glow:#12c8bf"></div>
-                <div class="map-dot dot-ankara" style="--size:14px;--glow:#3b82f6"></div>
-                <div class="map-dot dot-izmir" style="--size:12px;--glow:#12c8bf"></div>
-                <div class="map-dot dot-bursa" style="--size:8px;--glow:#64748b"></div>
-                <div class="map-dot dot-antalya" style="--size:7px;--glow:#64748b"></div>
-                <div class="map-dot dot-mersin" style="--size:9px;--glow:#3b82f6"></div>
-                <div class="map-dot dot-trabzon" style="--size:6px;--glow:#64748b"></div>
-                <div class="map-dot dot-gaziantep" style="--size:8px;--glow:#3b82f6"></div>
+                <img src="/tr-dark.svg" alt="Türkiye Haritası" class="turkey-svg-img">
+                <!-- Şehir noktaları (% konumlar) -->
+                <span class="map-dot" style="top:27%;left:19%" title="İstanbul"></span>
+                <span class="map-dot" style="top:40%;left:40%" title="Ankara"></span>
+                <span class="map-dot dot-sm" style="top:52%;left:15%" title="İzmir"></span>
+                <span class="map-dot dot-sm" style="top:33%;left:23%" title="Bursa"></span>
+                <span class="map-dot dot-xs" style="top:66%;left:34%" title="Antalya"></span>
+                <span class="map-dot dot-xs" style="top:64%;left:46%" title="Mersin"></span>
+                <span class="map-dot dot-xs" style="top:22%;left:62%" title="Trabzon"></span>
+                <span class="map-dot dot-sm" style="top:55%;left:56%" title="Gaziantep"></span>
+                <span class="map-dot dot-xs" style="top:60%;left:49%" title="Adana"></span>
+                <span class="map-dot dot-xs" style="top:55%;left:40%" title="Konya"></span>
+                <span class="map-dot dot-xs" style="top:45%;left:61%" title="Diyarbakır"></span>
+                <span class="map-dot dot-xs" style="top:22%;left:49%" title="Samsun"></span>
+                <!-- Live notification popup -->
+                <div class="live-notify" id="liveNotify">
+                    <span class="live-dot"></span>
+                    <span id="liveNotifyText"></span>
+                </div>
             </div>
             <div class="map-legend">
                 <span><i style="background:#12c8bf"></i> 500+ kullanıcı</span>
@@ -422,6 +433,69 @@ if (!$spBlock) $spBlock = ['eyebrow' => 'SOSYAL KANIT', 'title' => 'Türkiye gen
   }, { passive: true });
 
   requestAnimationFrame(autoScroll);
+})();
+</script>
+<script>
+/* Live notification — random city usage popup */
+(function() {
+  var cities = [
+    'İstanbul','Ankara','İzmir','Bursa','Antalya','Adana','Konya','Gaziantep',
+    'Mersin','Diyarbakır','Kayseri','Eskişehir','Trabzon','Samsun','Denizli',
+    'Şanlıurfa','Malatya','Kahramanmaraş','Van','Batman','Erzurum','Elazığ',
+    'Aydın','Manisa','Balıkesir','Sakarya','Tekirdağ','Muğla','Hatay','Mardin',
+    'Kocaeli','Afyonkarahisar','Sivas','Tokat','Ordu','Düzce','Çorum','Çanakkale'
+  ];
+  var actions = [
+    ' ilinden bir kullanıcı GTİP sorguluyor',
+    ' ilinden beyanname hazırlanıyor',
+    ' ilinden maliyet hesabı yapılıyor',
+    ' ilinden ceza risk analizi çalıştırıldı',
+    ' ilinden mevzuat araştırması yapılıyor',
+    ' ilinden bir firma platforma katıldı',
+    ' ilinden menşe analizi tamamlandı'
+  ];
+  var el = document.getElementById('liveNotify');
+  var textEl = document.getElementById('liveNotifyText');
+  if (!el || !textEl) return;
+
+  var notifyInterval = null;
+  var isVisible = false;
+
+  function showNotification() {
+    var city = cities[Math.floor(Math.random() * cities.length)];
+    var action = actions[Math.floor(Math.random() * actions.length)];
+    var count = Math.floor(Math.random() * 4) + 1;
+    textEl.textContent = city + action;
+    el.classList.add('show');
+    setTimeout(function() {
+      el.classList.remove('show');
+    }, 3500);
+  }
+
+  function startCycle() {
+    if (notifyInterval) return;
+    setTimeout(showNotification, 800);
+    notifyInterval = setInterval(showNotification, 5500);
+  }
+  function stopCycle() {
+    if (notifyInterval) { clearInterval(notifyInterval); notifyInterval = null; }
+    el.classList.remove('show');
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !isVisible) {
+        isVisible = true;
+        startCycle();
+      } else if (!entry.isIntersecting && isVisible) {
+        isVisible = false;
+        stopCycle();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  var section = document.querySelector('.testimonials-section');
+  if (section) observer.observe(section);
 })();
 </script>
 <?php require __DIR__ . '/footer.php'; ?>
