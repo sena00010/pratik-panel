@@ -34,44 +34,59 @@ $statusLabels = [
     <?php else: ?>
         <div style="display:grid;gap:16px;margin-bottom:40px">
             <?php foreach ($pendingPosts as $pp): ?>
-            <article style="background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:0;overflow:hidden">
-                <div style="display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--border)">
-                    <div style="flex:1;min-width:0">
-                        <h3 style="margin:0;font-size:16px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= e($pp['title']) ?></h3>
-                        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-                            <span style="font-size:12px;color:var(--text-muted)">by <?= e($pp['author_name'] ?: $pp['author_username'] ?: 'Bilinmiyor') ?></span>
-                            <span style="font-size:11px;padding:2px 10px;border-radius:6px;font-weight:700;background:rgba(229,160,25,.15);color:#e5a019">Onay Bekliyor</span>
-                            <?php if (!empty($pp['created_at'])): ?>
-                            <span style="font-size:11px;color:var(--text-muted)"><?= date('d.m.Y H:i', strtotime($pp['created_at'])) ?></span>
-                            <?php endif; ?>
+            <article style="background:var(--bg-panel); border:1px solid var(--border); border-radius:18px; padding:24px; box-shadow:0 8px 30px rgba(0,0,0,0.04); display:flex; flex-direction:column; gap:20px; transition:transform .2s">
+                <!-- Header / Meta -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                    <div style="display:flex; align-items:center; gap:12px">
+                        <?php if (!empty($pp['author_photo'])): ?>
+                            <img src="<?= e($pp['author_photo']) ?>" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid rgba(18,200,191,0.2)">
+                        <?php else: ?>
+                            <div style="width:40px; height:40px; border-radius:50%; background:rgba(18,200,191,.15); color:#12c8bf; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px"><?= mb_strtoupper(mb_substr($pp['author_name'] ?: $pp['author_username'] ?: 'A', 0, 1)) ?></div>
+                        <?php endif; ?>
+                        <div>
+                            <div style="font-weight:700; color:var(--text); font-size:14px"><?= e($pp['author_name'] ?: $pp['author_username'] ?: 'Bilinmiyor') ?></div>
+                            <div style="color:var(--text-muted); font-size:12px; margin-top:2px">
+                                <?php if (!empty($pp['created_at'])) echo date('d M Y, H:i', strtotime($pp['created_at'])) . ' · '; ?>
+                                <span style="color:#e5a019; font-weight:700">Onay Bekliyor</span>
+                            </div>
                         </div>
                     </div>
-                    <?php if (!empty($pp['cover_image'])): ?>
-                    <img src="<?= e($pp['cover_image']) ?>" style="width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid var(--border);flex-shrink:0" alt="">
+                    <?php if (!empty($pp['meta_title']) || !empty($pp['meta_description'])): ?>
+                    <div style="background:rgba(59,130,246,.08); padding:8px 12px; border-radius:8px; font-size:11px; max-width:300px">
+                        <strong style="color:var(--brand); display:block; margin-bottom:4px">SEO Verisi</strong>
+                        <?php if (!empty($pp['meta_title'])): ?><div style="color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis"><strong>T:</strong> <?= e($pp['meta_title']) ?></div><?php endif; ?>
+                        <?php if (!empty($pp['meta_description'])): ?><div style="color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis"><strong>D:</strong> <?= e($pp['meta_description']) ?></div><?php endif; ?>
+                    </div>
                     <?php endif; ?>
                 </div>
 
-                <?php if (!empty($pp['meta_title']) || !empty($pp['meta_description'])): ?>
-                <div style="padding:12px 22px;background:rgba(59,130,246,.05);border-bottom:1px solid var(--border);font-size:12px">
-                    <strong style="color:var(--brand)">SEO:</strong>
-                    <?php if (!empty($pp['meta_title'])): ?><span style="color:var(--text-muted);margin-left:6px">Title: <?= e($pp['meta_title']) ?></span><?php endif; ?>
-                    <?php if (!empty($pp['meta_description'])): ?><span style="color:var(--text-muted);margin-left:12px">Desc: <?= e(mb_substr($pp['meta_description'], 0, 80)) ?>...</span><?php endif; ?>
+                <!-- Preview Card Layout -->
+                <div style="display:grid; grid-template-columns: 240px 1fr; gap:24px; align-items:start">
+                    <?php if (!empty($pp['cover_image'])): ?>
+                        <div style="width:100%; aspect-ratio:16/10; border-radius:12px; overflow:hidden; background:rgba(0,0,0,0.03); border:1px solid var(--border)">
+                            <img src="<?= e($pp['cover_image']) ?>" style="width:100%; height:100%; object-fit:contain" alt="">
+                        </div>
+                    <?php else: ?>
+                        <div style="width:100%; aspect-ratio:16/10; border-radius:12px; background:linear-gradient(135deg, rgba(18,200,191,0.1), rgba(10,22,36,0.05)); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:40px">
+                            📝
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div>
+                        <h3 style="margin:0 0 12px 0; font-size:22px; font-weight:800; color:var(--text); line-height:1.3"><?= e($pp['title']) ?></h3>
+                        <p style="margin:0 0 16px 0; font-size:14px; color:var(--text-muted); line-height:1.6; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden"><?= e($pp['summary'] ?: strip_tags($pp['content'])) ?></p>
+                        
+                        <div style="max-height:140px; overflow-y:auto; padding:12px; background:rgba(0,0,0,0.02); border-radius:8px; border:1px dashed var(--border); font-size:12px; color:var(--text-muted); line-height:1.6">
+                            <strong style="display:block; margin-bottom:6px; color:var(--text)">İçerik Önizleme (Ham Temsil):</strong>
+                            <?= e(mb_substr(strip_tags($pp['content']), 0, 400)) ?>...
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
 
-                <?php if (!empty($pp['summary'])): ?>
-                <div style="padding:12px 22px;border-bottom:1px solid var(--border)">
-                    <p style="margin:0;font-size:13px;color:var(--text-muted)"><strong>Özet:</strong> <?= e($pp['summary']) ?></p>
-                </div>
-                <?php endif; ?>
-
-                <div style="padding:16px 22px;max-height:350px;overflow-y:auto;font-size:14px;line-height:1.7;color:var(--text)">
-                    <?= $pp['content'] ?>
-                </div>
-
-                <div style="display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--border);background:rgba(0,0,0,.02)">
-                    <form method="post" action="<?= admin_url('blogs/approve') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="submit" style="border:0;border-radius:10px;background:#05ad71;color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 4px 16px rgba(5,173,113,.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">✅ Onayla & Yayınla</button></form>
-                    <form method="post" action="<?= admin_url('blogs/reject') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="button" style="border:0;border-radius:10px;background:var(--danger);color:#fff;padding:12px 28px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''" onclick="pgConfirm('Bu yazıyı reddetmek istediğinize emin misiniz? Blogger, panelinde bunu görecektir.', () => this.form.submit(), 'Blog Yazısını Reddet')">❌ Reddet</button></form>
+                <!-- Actions -->
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px; padding-top:20px; border-top:1px solid var(--border)">
+                    <form method="post" action="<?= admin_url('blogs/reject') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="button" style="border:0; border-radius:8px; background:rgba(255,93,108,0.1); color:var(--danger); padding:10px 20px; font-weight:700; font-size:13px; cursor:pointer; transition:all .15s" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff'" onmouseout="this.style.background='rgba(255,93,108,0.1)'; this.style.color='var(--danger)'" onclick="pgConfirm('Bu yazıyı reddetmek istediğinize emin misiniz? Blogger, panelinde bunu görecektir.', () => this.form.submit(), 'Blog Yazısını Reddet')">❌ Reddet</button></form>
+                    <form method="post" action="<?= admin_url('blogs/approve') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$pp['id'] ?>"><button type="submit" style="border:0; border-radius:8px; background:#05ad71; color:#fff; padding:10px 24px; font-weight:800; font-size:13px; cursor:pointer; transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(5,173,113,.4)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">✅ Onayla & Yayınla</button></form>
                 </div>
             </article>
             <?php endforeach; ?>
