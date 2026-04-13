@@ -22,7 +22,7 @@ $ogImage = $seo['og_image'] ?? '';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Inter+Tight:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260413c">
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260413h">
     <script src="<?= asset('js/site.js') ?>?v=20260413b" defer></script>
 </head>
 <body>
