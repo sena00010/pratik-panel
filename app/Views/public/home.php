@@ -174,6 +174,83 @@ $finalCta = $blocks['final_cta'] ?? [
     </div>
 </section>
 
+<?php
+$intCopy = $landingBlocks['integrations_copy'] ?? [];
+$audCopy = $landingBlocks['audience_copy'] ?? [];
+?>
+
+<section class="section light-section" id="entegrasyonlar">
+    <div class="section-head centered">
+        <span class="eyebrow"><?= e($intCopy['eyebrow'] ?? 'ENTEGRASYONLAR') ?></span>
+        <h2><?= e($intCopy['title'] ?? "Türkiye'nin gümrük altyapısıyla doğrudan bağlı") ?></h2>
+        <p><?= e($intCopy['description'] ?? '') ?></p>
+    </div>
+    <div class="integration-grid">
+        <?php foreach ($integrations as $int): ?>
+            <article class="integration-card">
+                <div class="integration-card__icon" style="background: <?= e($int['accent']) ?>">
+                    <?php
+                    $intIcons = [
+                        'BİLGE Sistemi' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h4"/></svg>',
+                        'TAREKS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>',
+                        'BTB / ticaret.gov.tr' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>',
+                        'BeyanameAPI' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>',
+                        'Banka Web Servisleri' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4M14 12h4"/></svg>',
+                        'NCTS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
+                        'YKTS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
+                        'REST API' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+                    ];
+                    echo $intIcons[$int['title']] ?? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+                    ?>
+                </div>
+                <h3><?= e($int['title']) ?></h3>
+                <p><?= e($int['description']) ?></p>
+                <?php
+                $statusLabels = ['canli' => '● Canlı', 'yakinda' => 'Yakında', 'kurumsal' => 'Kurumsal'];
+                $statusClass = $int['status'] ?? 'canli';
+                ?>
+                <span class="integration-status integration-status--<?= e($statusClass) ?>"><?= e($statusLabels[$statusClass] ?? $statusClass) ?></span>
+            </article>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<section class="section audience-section">
+    <div class="section-head">
+        <span class="eyebrow"><?= e($audCopy['eyebrow'] ?? 'KİMLER KULLANIR') ?></span>
+        <h2><?= e($audCopy['title'] ?? 'Her gümrük profesyoneli için tasarlandı') ?></h2>
+    </div>
+    <div class="audience-grid">
+        <?php foreach ($audienceCards as $card): ?>
+            <article class="audience-card" style="--accent: <?= e($card['accent']) ?>">
+                <div class="audience-card__icon" style="background: <?= e($card['accent']) ?>">
+                    <?php
+                    $audIcons = [
+                        'Gümrük Müşavirleri' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 010 20M12 2a15 15 0 000 20M2 12h20"/></svg>',
+                        'İthalatçı / İhracatçı' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12z"/></svg>',
+                        'Lojistik Firmaları' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+                        'E-Ticaret & KOBİ' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
+                    ];
+                    echo $audIcons[$card['title']] ?? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+                    ?>
+                </div>
+                <h3><?= e($card['title']) ?></h3>
+                <p><?= e($card['description']) ?></p>
+                <?php
+                $features = array_filter(array_map('trim', explode("\n", $card['features'] ?? '')));
+                if (!empty($features)):
+                ?>
+                <ul>
+                    <?php foreach ($features as $feat): ?>
+                        <li><?= e($feat) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
+            </article>
+        <?php endforeach; ?>
+    </div>
+</section>
+
 <section class="section contrast" id="rakipler">
     <span class="eyebrow">NEDEN PRATİK GÜMRÜK</span>
     <h2>Rakiplerden farkımız</h2>
@@ -256,4 +333,44 @@ $finalCta = $blocks['final_cta'] ?? [
     <p><?= e($finalCta['description'] ?? '') ?></p>
     <div><a class="btn btn-primary btn-large" href="#fiyatlandirma"><?= e($finalCta['primary_button'] ?? '') ?></a><a class="btn btn-dark-outline btn-large" href="#"><?= e($finalCta['secondary_button'] ?? '') ?></a></div>
 </section>
+
+<script>
+(function() {
+  if (window.innerWidth > 760) return;
+  const grid = document.querySelector('.audience-grid');
+  if (!grid) return;
+
+  let speed = 0.8;          // px per frame (~48px/sec at 60fps)
+  let paused = false;
+  let resumeTimer = null;
+
+  function autoScroll() {
+    if (!paused) {
+      grid.scrollLeft += speed;
+      // Loop back when reaching the end
+      if (grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2) {
+        grid.scrollLeft = 0;
+      }
+    }
+    requestAnimationFrame(autoScroll);
+  }
+
+  function pauseScroll() {
+    paused = true;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(function() { paused = false; }, 3000);
+  }
+
+  grid.addEventListener('touchstart', pauseScroll, { passive: true });
+  grid.addEventListener('mousedown', pauseScroll);
+  grid.addEventListener('click', pauseScroll);
+  grid.addEventListener('scroll', function() {
+    if (!paused) return;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(function() { paused = false; }, 3000);
+  }, { passive: true });
+
+  requestAnimationFrame(autoScroll);
+})();
+</script>
 <?php require __DIR__ . '/footer.php'; ?>

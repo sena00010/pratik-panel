@@ -22,14 +22,29 @@ final class AdminController
             return;
         }
 
+        $role = $_SESSION['admin_role'] ?? 'admin';
+
+        // Blogger: only sees their own blog posts
+        if ($role === 'blogger') {
+            $myPosts = $this->repo->blogPostsByAuthor((int) $_SESSION['admin_id']);
+            View::render('admin/blogger-dashboard', [
+                'posts' => $myPosts,
+                'role' => $role,
+            ], 'layouts/admin');
+            return;
+        }
+
         View::render('admin/dashboard', [
             'settings' => $this->repo->siteSettings(),
             'modules' => $this->repo->modules(false),
             'faqs' => $this->repo->faqs(false),
             'posts' => $this->repo->blogPosts(false),
+            'integrations' => $this->repo->integrations(false),
+            'audienceCards' => $this->repo->audienceCards(false),
             'seoRows' => Database::pdo()->query('SELECT * FROM seo_meta ORDER BY page ASC, slug ASC')->fetchAll(),
             'landingRows' => Database::pdo()->query('SELECT * FROM landing_blocks ORDER BY id ASC')->fetchAll(),
-            'adminUsers' => Database::pdo()->query('SELECT id, username, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
+            'adminUsers' => Database::pdo()->query('SELECT id, username, role, display_name, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
+            'role' => $role,
         ], 'layouts/admin');
     }
 
@@ -43,6 +58,8 @@ final class AdminController
         if ($user && password_verify($password, $user['password_hash'])) {
             session_regenerate_id(true);
             $_SESSION['admin_id'] = (int) $user['id'];
+            $_SESSION['admin_role'] = $user['role'] ?? 'admin';
+            $_SESSION['admin_username'] = $user['username'];
             $_SESSION['flash'] = 'Yönetim paneline hoş geldiniz.';
         } else {
             $_SESSION['flash'] = 'Kullanıcı adı veya şifre hatalı.';
@@ -108,9 +125,11 @@ final class AdminController
     public function saveBlog(): void
     {
         $this->guard();
+        $role = $_SESSION['admin_role'] ?? 'admin';
         $data = $this->postData(['title', 'slug', 'summary', 'content', 'cover_image', 'published_at', 'is_published']);
         $slug = $data['slug'] !== '' ? slugify($data['slug']) : slugify($data['title']);
         $publishedAt = $data['published_at'] !== '' ? $data['published_at'] : date('Y-m-d H:i:s');
+        $authorId = (int) ($_SESSION['admin_id'] ?? 0);
 
         // Handle cover image upload
         $coverImage = $data['cover_image'];
@@ -119,11 +138,21 @@ final class AdminController
         }
 
         if (!empty($_POST['id'])) {
+            // Blogger can only edit their own posts
+            if ($role === 'blogger') {
+                $check = Database::pdo()->prepare('SELECT author_id FROM blog_posts WHERE id = ?');
+                $check->execute([(int) $_POST['id']]);
+                $existing = $check->fetch();
+                if (!$existing || (int) $existing['author_id'] !== $authorId) {
+                    $_SESSION['flash'] = 'Bu yazıyı düzenleme yetkiniz yok.';
+                    redirect(config('app.admin_path'));
+                }
+            }
             $stmt = Database::pdo()->prepare('UPDATE blog_posts SET title=?, slug=?, summary=?, content=?, cover_image=?, published_at=?, is_published=? WHERE id=?');
             $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published']), (int) $_POST['id']]);
         } else {
-            $stmt = Database::pdo()->prepare('INSERT INTO blog_posts (title, slug, summary, content, cover_image, published_at, is_published) VALUES (?,?,?,?,?,?,?)');
-            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published'])]);
+            $stmt = Database::pdo()->prepare('INSERT INTO blog_posts (title, slug, summary, content, cover_image, published_at, is_published, author_id) VALUES (?,?,?,?,?,?,?,?)');
+            $stmt->execute([$data['title'], $slug, $data['summary'], $data['content'], $coverImage, $publishedAt, (int) !empty($data['is_published']), $authorId]);
         }
 
         $this->done('Blog yazısı kaydedildi.');
@@ -223,9 +252,11 @@ final class AdminController
 
     public function saveAdmin(): void
     {
-        $this->guard();
+        $this->guardAdmin();
         $username = trim((string) ($_POST['username'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
+        $role = in_array($_POST['role'] ?? '', ['admin', 'blogger'], true) ? $_POST['role'] : 'admin';
+        $displayName = trim((string) ($_POST['display_name'] ?? ''));
 
         if ($username === '' || $password === '') {
             $_SESSION['flash'] = 'Kullanıcı adı ve şifre gereklidir.';
@@ -239,10 +270,54 @@ final class AdminController
         }
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = Database::pdo()->prepare('INSERT INTO admin_users (username, password_hash, created_at) VALUES (?, ?, NOW())');
-        $stmt->execute([$username, $hash]);
+        $stmt = Database::pdo()->prepare('INSERT INTO admin_users (username, password_hash, role, display_name, created_at) VALUES (?, ?, ?, ?, NOW())');
+        $stmt->execute([$username, $hash, $role, $displayName ?: null]);
 
-        $this->done('Yeni admin kullanıcı oluşturuldu.');
+        $this->done(($role === 'blogger' ? 'Blogger' : 'Admin') . ' kullanıcı oluşturuldu.');
+    }
+
+    public function saveIntegration(): void
+    {
+        $this->guardAdmin();
+        $data = $this->postData(['title', 'description', 'accent', 'status', 'sort_order', 'is_active']);
+
+        if (!empty($_POST['id'])) {
+            $stmt = Database::pdo()->prepare('UPDATE integrations SET title=?, description=?, accent=?, status=?, sort_order=?, is_active=? WHERE id=?');
+            $stmt->execute([$data['title'], $data['description'], $data['accent'], $data['status'], (int) $data['sort_order'], (int) !empty($data['is_active']), (int) $_POST['id']]);
+        } else {
+            $stmt = Database::pdo()->prepare('INSERT INTO integrations (title, description, accent, status, sort_order, is_active) VALUES (?,?,?,?,?,?)');
+            $stmt->execute([$data['title'], $data['description'], $data['accent'], $data['status'], (int) $data['sort_order'], (int) !empty($data['is_active'])]);
+        }
+        $this->done('Entegrasyon kaydedildi.');
+    }
+
+    public function deleteIntegration(): void
+    {
+        $this->guardAdmin();
+        Database::pdo()->prepare('DELETE FROM integrations WHERE id = ?')->execute([(int) ($_POST['id'] ?? 0)]);
+        $this->done('Entegrasyon silindi.');
+    }
+
+    public function saveAudience(): void
+    {
+        $this->guardAdmin();
+        $data = $this->postData(['title', 'description', 'accent', 'features', 'sort_order', 'is_active']);
+
+        if (!empty($_POST['id'])) {
+            $stmt = Database::pdo()->prepare('UPDATE audience_cards SET title=?, description=?, accent=?, features=?, sort_order=?, is_active=? WHERE id=?');
+            $stmt->execute([$data['title'], $data['description'], $data['accent'], $data['features'], (int) $data['sort_order'], (int) !empty($data['is_active']), (int) $_POST['id']]);
+        } else {
+            $stmt = Database::pdo()->prepare('INSERT INTO audience_cards (title, description, accent, features, sort_order, is_active) VALUES (?,?,?,?,?,?)');
+            $stmt->execute([$data['title'], $data['description'], $data['accent'], $data['features'], (int) $data['sort_order'], (int) !empty($data['is_active'])]);
+        }
+        $this->done('Hedef kitle kartı kaydedildi.');
+    }
+
+    public function deleteAudience(): void
+    {
+        $this->guardAdmin();
+        Database::pdo()->prepare('DELETE FROM audience_cards WHERE id = ?')->execute([(int) ($_POST['id'] ?? 0)]);
+        $this->done('Hedef kitle kartı silindi.');
     }
 
     public function deleteAdmin(): void
@@ -269,6 +344,15 @@ final class AdminController
     {
         verify_csrf();
         if (!$this->isLoggedIn()) {
+            redirect(config('app.admin_path'));
+        }
+    }
+
+    private function guardAdmin(): void
+    {
+        $this->guard();
+        if (($_SESSION['admin_role'] ?? 'admin') !== 'admin') {
+            $_SESSION['flash'] = 'Bu işlem için yetkiniz yok.';
             redirect(config('app.admin_path'));
         }
     }

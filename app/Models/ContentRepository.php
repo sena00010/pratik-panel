@@ -89,4 +89,35 @@ final class ContentRepository
         $user = $stmt->fetch();
         return $user ?: null;
     }
+
+    public function adminUserById(int $id): ?array
+    {
+        $stmt = Database::pdo()->prepare('SELECT * FROM admin_users WHERE id = ? LIMIT 1');
+        $stmt->execute([$id]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function integrations(bool $activeOnly = true): array
+    {
+        return cache_remember('integrations_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
+            $sql = 'SELECT * FROM integrations' . ($activeOnly ? ' WHERE is_active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+            return Database::pdo()->query($sql)->fetchAll();
+        });
+    }
+
+    public function audienceCards(bool $activeOnly = true): array
+    {
+        return cache_remember('audience_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
+            $sql = 'SELECT * FROM audience_cards' . ($activeOnly ? ' WHERE is_active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+            return Database::pdo()->query($sql)->fetchAll();
+        });
+    }
+
+    public function blogPostsByAuthor(int $authorId): array
+    {
+        $stmt = Database::pdo()->prepare('SELECT * FROM blog_posts WHERE author_id = ? ORDER BY published_at DESC, id DESC');
+        $stmt->execute([$authorId]);
+        return $stmt->fetchAll();
+    }
 }

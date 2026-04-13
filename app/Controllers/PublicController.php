@@ -18,6 +18,8 @@ final class PublicController
             'faqs' => $this->repo->faqs(),
             'posts' => array_slice($this->repo->blogPosts(), 0, 3),
             'landingBlocks' => $this->repo->landingBlocks(),
+            'integrations' => $this->repo->integrations(),
+            'audienceCards' => $this->repo->audienceCards(),
             'seo' => $this->repo->seo('home'),
         ]);
     }

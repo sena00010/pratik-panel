@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 13 Nis 2026, 15:46:18
--- Sunucu sürümü: 10.4.24-MariaDB
--- PHP Sürümü: 7.4.29
+-- Anamakine: localhost:3306
+-- Üretim Zamanı: 13 Nis 2026, 19:02:17
+-- Sunucu sürümü: 10.6.25-MariaDB
+-- PHP Sürümü: 8.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Veritabanı: `pratik_gumruk`
+-- Veritabanı: `mayancur_pratik_gumruk`
 --
 
 -- --------------------------------------------------------
@@ -29,8 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `admin_users` (
   `id` int(10) UNSIGNED NOT NULL,
-  `username` varchar(80) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_turkish_ci NOT NULL,
+  `username` varchar(80) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
@@ -39,9 +39,7 @@ CREATE TABLE `admin_users` (
 --
 
 INSERT INTO `admin_users` (`id`, `username`, `password_hash`, `created_at`) VALUES
-(1, 'admin', '$2y$10$zDWXnPtJrr/3QQ8I/Y4EEOPnRsbgxAfX8Sdn86c42Sl.bTTfpfRE6', '2026-04-12 15:16:21'),
-(3, 'anılcan', 'anılcan2026.', '2026-04-13 13:28:41'),
-(5, 'amilcan', '$2y$10$CthIge7jaQRSKIil3vRWpeUbAQo3MqrC9jdkkZyerPWfZofSOmE0S', '2026-04-13 13:32:48');
+(1, 'admin', '$2y$10$Ad5caiBMOzCDfmaDvuJFVOX4.69Q6HnTjQxZu1EOtXJg8svP.HxkG', '2026-04-12 15:16:21');
 
 -- --------------------------------------------------------
 
@@ -51,11 +49,11 @@ INSERT INTO `admin_users` (`id`, `username`, `password_hash`, `created_at`) VALU
 
 CREATE TABLE `blog_posts` (
   `id` int(10) UNSIGNED NOT NULL,
-  `title` varchar(220) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `slug` varchar(220) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `summary` text COLLATE utf8mb4_turkish_ci NOT NULL,
-  `content` mediumtext COLLATE utf8mb4_turkish_ci NOT NULL,
-  `cover_image` varchar(500) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `title` varchar(220) NOT NULL,
+  `slug` varchar(220) NOT NULL,
+  `summary` text NOT NULL,
+  `content` mediumtext NOT NULL,
+  `cover_image` varchar(500) DEFAULT NULL,
   `published_at` datetime NOT NULL,
   `is_published` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -67,9 +65,12 @@ CREATE TABLE `blog_posts` (
 --
 
 INSERT INTO `blog_posts` (`id`, `title`, `slug`, `summary`, `content`, `cover_image`, `published_at`, `is_published`, `created_at`, `updated_at`) VALUES
-(1, 'GTİP tespitinde en sık yapılan 5 hata', 'gtip-tespitinde-en-sik-yapilan-5-hata', 'Yanlış ürün tanımı, eksik teknik bilgi ve emsal karar kontrolü yapılmaması ithalat maliyetini doğrudan etkiler.', 'GTİP tespitinde hata çoğu zaman ürün adının tek başına yeterli sanılmasından kaynaklanır. Teknik özellikler, kullanım amacı, malzeme bilgisi ve emsal BTB kararları birlikte değerlendirilmelidir.\n\nPratik Gümrük bu alanları tek akışta toplar ve sonuçları kaynakla birlikte sunar.', '', '2026-04-12 10:00:00', 1, '2026-04-12 15:16:21', NULL),
-(2, 'Belge kontrolü neden beyanname öncesinde yapılmalı?', 'belge-kontrolu-neden-beyanname-oncesinde-yapilmali', 'Fatura, konşimento ve menşe belgesi arasındaki küçük uyumsuzluklar işlem süresini uzatabilir.', 'Beyanname hazırlanmadan önce belge kontrolü yapmak operasyon süresini kısaltır. Tutar, miktar, menşe ve ürün tanımı alanlarının birbiriyle uyumlu olması gerekir.\n\nOtomatik belge kontrolü, ekiplerin manuel kontrol yükünü azaltır ve eksikleri işlem başlamadan görünür hale getirir.', '', '2026-04-10 10:00:00', 1, '2026-04-12 15:16:21', NULL),
-(3, 'İthalat maliyeti hesaplarken hangi kalemler unutuluyor?', 'ithalat-maliyeti-hesaplarken-hangi-kalemler-unutuluyor', 'GV ve KDV dışında ek mali yükümlülükler, damping ve lojistik masraflar toplam maliyeti değiştirebilir.', 'İthalat maliyeti hesabında yalnızca gümrük vergisi ve KDV’ye bakmak eksik sonuç verir. Menşe, ürün grubu, ek mali yükümlülük, damping ve gözetim uygulamaları kontrol edilmelidir.\n\nDoğru maliyet hesabı teklif aşamasında karlılığı korur.', '', '2026-04-08 10:00:00', 1, '2026-04-12 15:16:21', NULL);
+(1, 'GTİP tespitinde en sık yapılan 5 hata', 'gtip-tespitinde-en-sik-yapilan-5-hata', 'Yanlış ürün tanımı, eksik teknik bilgi ve emsal karar kontrolü yapılmaması ithalat maliyetini doğrudan etkiler.', 'GTİP tespitinde hata çoğu zaman ürün adının tek başına yeterli sanılmasından kaynaklanır. Teknik özellikler, kullanım amacı, malzeme bilgisi ve emsal BTB kararları birlikte değerlendirilmelidir.\n\nPratik Gümrük bu alanları tek akışta toplar ve sonuçları kaynakla birlikte sunar.', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80', '2026-04-12 10:00:00', 1, '2026-04-12 15:16:21', '2026-04-13 15:54:41'),
+(2, 'Belge kontrolü neden beyanname öncesinde yapılmalı?', 'belge-kontrolu-neden-beyanname-oncesinde-yapilmali', 'Fatura, konşimento ve menşe belgesi arasındaki küçük uyumsuzluklar işlem süresini uzatabilir.', 'Beyanname hazırlanmadan önce belge kontrolü yapmak operasyon süresini kısaltır. Tutar, miktar, menşe ve ürün tanımı alanlarının birbiriyle uyumlu olması gerekir.\n\nOtomatik belge kontrolü, ekiplerin manuel kontrol yükünü azaltır ve eksikleri işlem başlamadan görünür hale getirir.', 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=800&q=80', '2026-04-10 10:00:00', 1, '2026-04-12 15:16:21', '2026-04-13 15:54:41'),
+(3, 'İthalat maliyeti hesaplarken hangi kalemler unutuluyor?', 'ithalat-maliyeti-hesaplarken-hangi-kalemler-unutuluyor', 'GV ve KDV dışında ek mali yükümlülükler, damping ve lojistik masraflar toplam maliyeti değiştirebilir.', 'İthalat maliyeti hesabında yalnızca gümrük vergisi ve KDV’ye bakmak eksik sonuç verir. Menşe, ürün grubu, ek mali yükümlülük, damping ve gözetim uygulamaları kontrol edilmelidir.\n\nDoğru maliyet hesabı teklif aşamasında karlılığı korur.', 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80', '2026-04-08 10:00:00', 1, '2026-04-12 15:16:21', '2026-04-13 15:54:41'),
+(7, 'STA anlasmalari ile gumruk vergisi avantaji nasil saglanir?', 'sta-anlasmalari-ile-gumruk-vergisi-avantaji', 'Serbest ticaret anlasmalari dogru kullanildiginda ithalat maliyetini %10-30 arasinda dusurebilir.', 'Serbest Ticaret Anlasmalari (STA), Turkiye\'nin imzaladigi ikili ve cok tarafli ticaret anlasmalaridir.\n\nDogru mense belgesi ve uygun GTIP kodu ile STA avantajlarindan yararlanmak mumkundur.', 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80', '2026-04-06 10:00:00', 1, '2026-04-13 15:54:41', NULL),
+(8, 'Gumrukte dijital donusum: AI destekli surec yonetimi', 'gumrukte-dijital-donusum-ai-destekli-surec-yonetimi', 'Yapay zeka teknolojileri gumruk sureclerinde hiz, dogruluk ve maliyet avantaji sagliyor.', 'Gumruk sektoru uzun yillar manuel sureclerle yonetildi. Ancak artan ticaret hacmi ve karmasik mevzuat yapisi, dijital donusumu kacinilmaz hale getirdi.\n\nYapay zeka destekli platformlar birÃ§ok alanda insan hatalarini minimize eder.', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80', '2026-04-04 10:00:00', 1, '2026-04-13 15:54:41', NULL),
+(9, 'YYS basvurusunda dikkat edilmesi gereken 10 kriter', 'yys-basvurusunda-dikkat-edilmesi-gereken-kriterler', 'Yetkilendirilmis Yukumlu Statusu basvuru surecinde sik yapilan hatalar ve kontrol listesi.', 'Yetkilendirilmis Yukumlu Statusu (YYS), gumruk islemlerinde kolaylik ve hizlandirma saglayan onemli bir sertifikasyon programidir.\n\nBasvuru surecinde mali yeterlilik, guvenlik standartlari degerlendilir.', 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80', '2026-04-02 10:00:00', 1, '2026-04-13 15:54:41', NULL);
 
 -- --------------------------------------------------------
 
@@ -79,8 +80,8 @@ INSERT INTO `blog_posts` (`id`, `title`, `slug`, `summary`, `content`, `cover_im
 
 CREATE TABLE `faqs` (
   `id` int(10) UNSIGNED NOT NULL,
-  `question` varchar(255) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `answer` text COLLATE utf8mb4_turkish_ci NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `answer` text NOT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -105,8 +106,8 @@ INSERT INTO `faqs` (`id`, `question`, `answer`, `sort_order`, `is_active`) VALUE
 
 CREATE TABLE `landing_blocks` (
   `id` int(10) UNSIGNED NOT NULL,
-  `block_key` varchar(80) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `title` varchar(160) COLLATE utf8mb4_turkish_ci NOT NULL,
+  `block_key` varchar(80) NOT NULL,
+  `title` varchar(160) NOT NULL,
   `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`payload`)),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
@@ -135,14 +136,14 @@ INSERT INTO `landing_blocks` (`id`, `block_key`, `title`, `payload`, `updated_at
 
 CREATE TABLE `modules` (
   `id` int(10) UNSIGNED NOT NULL,
-  `title` varchar(180) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `slug` varchar(190) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `eyebrow` varchar(80) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `icon` varchar(12) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT '□',
-  `accent` varchar(20) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT '#12c8bf',
-  `summary` text COLLATE utf8mb4_turkish_ci NOT NULL,
+  `title` varchar(180) NOT NULL,
+  `slug` varchar(190) NOT NULL,
+  `eyebrow` varchar(80) NOT NULL,
+  `icon` varchar(12) NOT NULL DEFAULT '□',
+  `accent` varchar(20) NOT NULL DEFAULT '#12c8bf',
+  `summary` text NOT NULL,
   `features` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`features`)),
-  `detail_content` mediumtext COLLATE utf8mb4_turkish_ci NOT NULL,
+  `detail_content` mediumtext NOT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -169,12 +170,12 @@ INSERT INTO `modules` (`id`, `title`, `slug`, `eyebrow`, `icon`, `accent`, `summ
 
 CREATE TABLE `seo_meta` (
   `id` int(10) UNSIGNED NOT NULL,
-  `page` varchar(80) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `slug` varchar(220) COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT '',
-  `meta_title` varchar(255) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `meta_description` varchar(320) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `meta_keywords` varchar(320) COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  `og_image` varchar(500) COLLATE utf8mb4_turkish_ci DEFAULT NULL
+  `page` varchar(80) NOT NULL,
+  `slug` varchar(220) NOT NULL DEFAULT '',
+  `meta_title` varchar(255) NOT NULL,
+  `meta_description` varchar(320) NOT NULL,
+  `meta_keywords` varchar(320) DEFAULT NULL,
+  `og_image` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
@@ -193,8 +194,8 @@ INSERT INTO `seo_meta` (`id`, `page`, `slug`, `meta_title`, `meta_description`, 
 
 CREATE TABLE `site_settings` (
   `id` int(10) UNSIGNED NOT NULL,
-  `key` varchar(120) COLLATE utf8mb4_turkish_ci NOT NULL,
-  `value` text COLLATE utf8mb4_turkish_ci DEFAULT NULL
+  `key` varchar(120) NOT NULL,
+  `value` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 --
@@ -270,13 +271,13 @@ ALTER TABLE `site_settings`
 -- Tablo için AUTO_INCREMENT değeri `admin_users`
 --
 ALTER TABLE `admin_users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `blog_posts`
 --
 ALTER TABLE `blog_posts`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `faqs`

@@ -218,6 +218,74 @@ if (!is_array($trustedData)) $trustedData = [];
         </details>
     </section>
 
+    <!-- ========== ENTEGRASYONLAR ========== -->
+    <section class="panel">
+        <h2>⚡ Entegrasyonlar</h2>
+        <?php foreach ($integrations as $int): ?>
+            <details class="edit-row">
+                <summary><?= e($int['title']) ?> <small><?= e($int['status']) ?></small></summary>
+                <form method="post" action="<?= admin_url('integrations/save') ?>" class="grid-form">
+                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int) $int['id'] ?>">
+                    <label>Başlık<input name="title" value="<?= e($int['title']) ?>" required></label>
+                    <label>Açıklama<input name="description" value="<?= e($int['description']) ?>"></label>
+                    <label>Renk<input type="color" name="accent" value="<?= e($int['accent']) ?>"></label>
+                    <label>Durum<select name="status"><option value="canli" <?= $int['status']==='canli'?'selected':'' ?>>Canlı</option><option value="yakinda" <?= $int['status']==='yakinda'?'selected':'' ?>>Yakında</option><option value="kurumsal" <?= $int['status']==='kurumsal'?'selected':'' ?>>Kurumsal</option></select></label>
+                    <label>Sıra<input type="number" name="sort_order" value="<?= (int) $int['sort_order'] ?>"></label>
+                    <label class="check"><input type="checkbox" name="is_active" value="1" <?= $int['is_active'] ? 'checked' : '' ?>> Aktif</label>
+                    <button>Kaydet</button>
+                </form>
+                <form method="post" action="<?= admin_url('integrations/delete') ?>" onsubmit="return confirm('Silinsin mi?')"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int) $int['id'] ?>"><button class="danger">Sil</button></form>
+            </details>
+        <?php endforeach; ?>
+        <details class="edit-row create">
+            <summary>+ Yeni entegrasyon ekle</summary>
+            <form method="post" action="<?= admin_url('integrations/save') ?>" class="grid-form">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                <label>Başlık<input name="title" required></label>
+                <label>Açıklama<input name="description"></label>
+                <label>Renk<input type="color" name="accent" value="#12c8bf"></label>
+                <label>Durum<select name="status"><option value="canli">Canlı</option><option value="yakinda">Yakında</option><option value="kurumsal">Kurumsal</option></select></label>
+                <label>Sıra<input type="number" name="sort_order" value="0"></label>
+                <label class="check"><input type="checkbox" name="is_active" value="1" checked> Aktif</label>
+                <button>Kaydet</button>
+            </form>
+        </details>
+    </section>
+
+    <!-- ========== HEDEF KİTLE ========== -->
+    <section class="panel">
+        <h2>👥 Hedef Kitle Kartları</h2>
+        <?php foreach ($audienceCards as $card): ?>
+            <details class="edit-row">
+                <summary><?= e($card['title']) ?></summary>
+                <form method="post" action="<?= admin_url('audience/save') ?>" class="grid-form">
+                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int) $card['id'] ?>">
+                    <label>Başlık<input name="title" value="<?= e($card['title']) ?>" required></label>
+                    <label>Açıklama<input name="description" value="<?= e($card['description']) ?>"></label>
+                    <label>Renk<input type="color" name="accent" value="<?= e($card['accent']) ?>"></label>
+                    <label>Sıra<input type="number" name="sort_order" value="<?= (int) $card['sort_order'] ?>"></label>
+                    <label class="wide">Özellikler (her satır bir madde)<textarea name="features" rows="4"><?= e($card['features'] ?? '') ?></textarea></label>
+                    <label class="check"><input type="checkbox" name="is_active" value="1" <?= $card['is_active'] ? 'checked' : '' ?>> Aktif</label>
+                    <button>Kaydet</button>
+                </form>
+                <form method="post" action="<?= admin_url('audience/delete') ?>" onsubmit="return confirm('Silinsin mi?')"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int) $card['id'] ?>"><button class="danger">Sil</button></form>
+            </details>
+        <?php endforeach; ?>
+        <details class="edit-row create">
+            <summary>+ Yeni hedef kitle kartı ekle</summary>
+            <form method="post" action="<?= admin_url('audience/save') ?>" class="grid-form">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                <label>Başlık<input name="title" required></label>
+                <label>Açıklama<input name="description"></label>
+                <label>Renk<input type="color" name="accent" value="#12c8bf"></label>
+                <label>Sıra<input type="number" name="sort_order" value="0"></label>
+                <label class="wide">Özellikler (her satır bir madde)<textarea name="features" rows="4"></textarea></label>
+                <label class="check"><input type="checkbox" name="is_active" value="1" checked> Aktif</label>
+                <button>Kaydet</button>
+            </form>
+        </details>
+    </section>
+
     <!-- ========== SEO ========== -->
     <section class="panel">
         <h2>🔍 SEO</h2>
@@ -237,7 +305,9 @@ if (!is_array($trustedData)) $trustedData = [];
                         <span class="admin-user-avatar"><?= strtoupper(mb_substr($u['username'], 0, 1, 'UTF-8')) ?></span>
                         <div>
                             <strong><?= e($u['username']) ?></strong>
-                            <small><?= e($u['created_at']) ?></small>
+                            <small style="margin-left:8px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;background:<?= ($u['role']??'admin')==='blogger'?'rgba(229,160,25,.15)':'rgba(18,200,191,.15)' ?>;color:<?= ($u['role']??'admin')==='blogger'?'#e5a019':'#12c8bf' ?>"><?= e(ucfirst($u['role'] ?? 'admin')) ?></small>
+                            <?php if (!empty($u['display_name'])): ?><br><small style="color:var(--text-muted)"><?= e($u['display_name']) ?></small><?php endif; ?>
+                            <br><small><?= e($u['created_at']) ?></small>
                         </div>
                     </div>
                     <?php if ((int)$u['id'] !== (int)($_SESSION['admin_id'] ?? 0)): ?>
@@ -253,12 +323,14 @@ if (!is_array($trustedData)) $trustedData = [];
             <?php endforeach; ?>
         </div>
         <details class="edit-row create">
-            <summary>+ Yeni admin ekle</summary>
+            <summary>+ Yeni kullanıcı ekle (Admin veya Blogger)</summary>
             <form method="post" action="<?= admin_url('admins/save') ?>" class="grid-form">
                 <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                 <label>Kullanıcı adı<input name="username" required autocomplete="off"></label>
                 <label>Şifre<input type="password" name="password" required autocomplete="new-password"></label>
-                <button>Admin oluştur</button>
+                <label>Görünen Ad<input name="display_name" placeholder="Blog yazar adı"></label>
+                <label>Rol<select name="role"><option value="admin">Admin</option><option value="blogger">Blogger</option></select></label>
+                <button>Kullanıcı oluştur</button>
             </form>
         </details>
     </section>

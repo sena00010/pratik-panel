@@ -26,5 +26,9 @@ $router->post($adminPath . '/landing/save', [AdminController::class, 'saveLandin
 $router->post($adminPath . '/admins/save', [AdminController::class, 'saveAdmin']);
 $router->post($adminPath . '/admins/delete', [AdminController::class, 'deleteAdmin']);
 $router->post($adminPath . '/upload/image', [AdminController::class, 'uploadImage']);
+$router->post($adminPath . '/integrations/save', [AdminController::class, 'saveIntegration']);
+$router->post($adminPath . '/integrations/delete', [AdminController::class, 'deleteIntegration']);
+$router->post($adminPath . '/audience/save', [AdminController::class, 'saveAudience']);
+$router->post($adminPath . '/audience/delete', [AdminController::class, 'deleteAudience']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');
