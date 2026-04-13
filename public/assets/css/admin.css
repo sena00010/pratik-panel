@@ -152,12 +152,7 @@ body {
     cursor: pointer;
     transition: all .22s;
 }
-.login-toggle input { display: none;
-        position: fixed !important;
-        top: 54px !important;
-        bottom: 0;
-        z-index: 9;
-        overflow-y: auto; }
+.login-toggle input { display: none; }
 .login-toggle input:checked + span {
     /* parent label gets styled via JS */
 }
@@ -897,3 +892,26 @@ body {
 }
 
 
+
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 24px !important;
+        margin: 16px !important;
+        width: auto !important;
+    }
+    .login-card h1 {
+        font-size: 24px !important;
+    }
+    .login-toggle label {
+        flex-direction: column !important;
+        gap: 6px !important;
+        padding: 12px 4px !important;
+        font-size: 13px !important;
+        text-align: center;
+    }
+    .login-toggle label span {
+        white-space: normal !important;
+        line-height: 1.25 !important;
+    }
+}
