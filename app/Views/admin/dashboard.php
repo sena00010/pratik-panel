@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 function json_lines(?string $value): string {
     $items = json_decode($value ?: '[]', true) ?: [];
     return implode("\n", $items);
@@ -95,8 +95,8 @@ if (!is_array($trustedData)) $trustedData = [];
         <form method="post" action="<?= admin_url('landing/save') ?>" id="trusted-form">
             <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
             <input type="hidden" name="payload[<?= (int)$trustedRow['id'] ?>]" id="trusted-json" value="">
-            <div style="padding:0 18px 18px">
-                <div id="trusted-pills" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+            <div style="margin-top:16px;">
+                <div id="trusted-pills" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
                     <?php foreach ($trustedData as $brand): ?>
                         <span class="trusted-pill" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--brand-glow);color:var(--brand);font-weight:700;font-size:14px;border:1px solid rgba(18,200,191,.25)">
                             <?= e($brand) ?>
@@ -104,12 +104,12 @@ if (!is_array($trustedData)) $trustedData = [];
                         </span>
                     <?php endforeach; ?>
                 </div>
-                <div style="display:flex;gap:8px">
+                <div class="trusted-controls">
                     <input type="text" id="trusted-input" placeholder="Yeni şirket adı..." style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-input);color:var(--text);font:inherit;font-size:14px">
                     <button type="button" onclick="addTrusted()" style="padding:12px 20px;border:0;border-radius:10px;background:var(--brand);color:#021018;font-weight:800;font-size:14px;cursor:pointer">Ekle</button>
                 </div>
             </div>
-            <div style="padding:0 18px 18px"><button type="submit" style="padding:14px 20px;border:0;border-radius:10px;background:var(--brand);color:#021018;font-weight:800;font-size:15px;cursor:pointer;width:100%">Kullananları Kaydet</button></div>
+            <div style="margin-top:16px;"><button type="submit" style="padding:14px 20px;border:0;border-radius:10px;background:var(--brand);color:#021018;font-weight:800;font-size:15px;cursor:pointer;width:100%">Kullananları Kaydet</button></div>
         </form>
         <script>
         function addTrusted() {

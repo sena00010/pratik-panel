@@ -614,3 +614,18 @@ body {
 
 
 
+
+.trusted-controls {
+    display: flex;
+    gap: 8px;
+}
+@media (max-width: 480px) {
+    .trusted-controls {
+        flex-direction: column;
+    }
+    .trusted-controls button {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+    }
+}
