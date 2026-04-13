@@ -191,16 +191,16 @@ $audCopy = $landingBlocks['audience_copy'] ?? [];
                 <div class="integration-card__icon" style="background: <?= e($int['accent']) ?>">
                     <?php
                     $intIcons = [
-                        'BİLGE Sistemi' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h4"/></svg>',
-                        'TAREKS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>',
-                        'BTB / ticaret.gov.tr' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>',
-                        'BeyanameAPI' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>',
-                        'Banka Web Servisleri' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4M14 12h4"/></svg>',
-                        'NCTS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
-                        'YKTS' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
-                        'REST API' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+                        'BİLGE Sistemi' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h4"/></svg>',
+                        'TAREKS' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>',
+                        'BTB / ticaret.gov.tr' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>',
+                        'BeyanameAPI' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>',
+                        'Banka Web Servisleri' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4M14 12h4"/></svg>',
+                        'NCTS' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
+                        'YKTS' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
+                        'REST API' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
                     ];
-                    echo $intIcons[$int['title']] ?? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+                    echo $intIcons[$int['title']] ?? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
                     ?>
                 </div>
                 <h3><?= e($int['title']) ?></h3>
@@ -216,7 +216,7 @@ $audCopy = $landingBlocks['audience_copy'] ?? [];
 </section>
 
 <section class="section audience-section">
-    <div class="section-head">
+    <div class="section-head centered">
         <span class="eyebrow"><?= e($audCopy['eyebrow'] ?? 'KİMLER KULLANIR') ?></span>
         <h2><?= e($audCopy['title'] ?? 'Her gümrük profesyoneli için tasarlandı') ?></h2>
     </div>
@@ -226,12 +226,12 @@ $audCopy = $landingBlocks['audience_copy'] ?? [];
                 <div class="audience-card__icon" style="background: <?= e($card['accent']) ?>">
                     <?php
                     $audIcons = [
-                        'Gümrük Müşavirleri' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 010 20M12 2a15 15 0 000 20M2 12h20"/></svg>',
-                        'İthalatçı / İhracatçı' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12z"/></svg>',
-                        'Lojistik Firmaları' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
-                        'E-Ticaret & KOBİ' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
+                        'Gümrük Müşavirleri' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 010 20M12 2a15 15 0 000 20M2 12h20"/></svg>',
+                        'İthalatçı / İhracatçı' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12z"/></svg>',
+                        'Lojistik Firmaları' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+                        'E-Ticaret & KOBİ' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
                     ];
-                    echo $audIcons[$card['title']] ?? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+                    echo $audIcons[$card['title']] ?? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
                     ?>
                 </div>
                 <h3><?= e($card['title']) ?></h3>
@@ -276,6 +276,57 @@ $audCopy = $landingBlocks['audience_copy'] ?? [];
         <?php foreach ($security as $item): ?>
             <article><span><?= feature_icon_svg($item['icon'] ?? 'shield') ?></span><h3><?= e($item['title'] ?? '') ?></h3><p><?= e($item['text'] ?? '') ?></p></article>
         <?php endforeach; ?>
+    </div>
+</section>
+
+<?php
+$spBlock = null;
+foreach ($landingBlocks as $b) { if (isset($b['block_key']) && $b['block_key'] === 'social_proof') { $spBlock = json_decode($b['payload'], true); break; } }
+if (!$spBlock) $spBlock = ['eyebrow' => 'SOSYAL KANIT', 'title' => 'Türkiye genelinde 2.400+ aktif profesyonel', 'cities' => '81 ilden aktif kullanım · İstanbul, Ankara, İzmir öncü'];
+?>
+<section class="section testimonials-section">
+    <div class="section-head centered">
+        <span class="eyebrow"><?= e($spBlock['eyebrow'] ?? 'SOSYAL KANIT') ?></span>
+        <h2><?= e($spBlock['title'] ?? '') ?></h2>
+    </div>
+    <div class="testimonials-layout">
+        <div class="testimonials-map">
+            <div class="map-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg> İL BAZLI KULLANIM YOĞUNLUĞU</div>
+            <div class="turkey-map-visual">
+                <div class="map-dot dot-istanbul" style="--size:18px;--glow:#12c8bf"></div>
+                <div class="map-dot dot-ankara" style="--size:14px;--glow:#3b82f6"></div>
+                <div class="map-dot dot-izmir" style="--size:12px;--glow:#12c8bf"></div>
+                <div class="map-dot dot-bursa" style="--size:8px;--glow:#64748b"></div>
+                <div class="map-dot dot-antalya" style="--size:7px;--glow:#64748b"></div>
+                <div class="map-dot dot-mersin" style="--size:9px;--glow:#3b82f6"></div>
+                <div class="map-dot dot-trabzon" style="--size:6px;--glow:#64748b"></div>
+                <div class="map-dot dot-gaziantep" style="--size:8px;--glow:#3b82f6"></div>
+            </div>
+            <div class="map-legend">
+                <span><i style="background:#12c8bf"></i> 500+ kullanıcı</span>
+                <span><i style="background:#3b82f6"></i> 100–500</span>
+                <span><i style="background:#64748b"></i> 50–100</span>
+            </div>
+            <p class="map-cities"><?= e($spBlock['cities'] ?? '81 ilden aktif kullanım · İstanbul, Ankara, İzmir öncü') ?></p>
+        </div>
+        <div class="testimonials-cards">
+            <?php foreach ($testimonials as $t): ?>
+            <article class="testimonial-card">
+                <div class="testimonial-stars"><?= str_repeat('★', (int)($t['rating'] ?? 5)) ?></div>
+                <blockquote>"<?= e($t['quote']) ?>"</blockquote>
+                <div class="testimonial-author">
+                    <span class="author-avatar" style="background:<?= e($t['badge_color'] ?? '#12c8bf') ?>"><?= e($t['author_initials'] ?? mb_substr($t['author_name'], 0, 2, 'UTF-8')) ?></span>
+                    <div>
+                        <strong><?= e($t['author_name']) ?></strong>
+                        <small><?= e($t['author_title'] ?? '') ?> · <?= e($t['author_location'] ?? '') ?></small>
+                    </div>
+                    <?php if (!empty($t['plan_badge'])): ?>
+                    <span class="testimonial-badge" style="color:<?= e($t['badge_color'] ?? '#12c8bf') ?>"><?= e($t['plan_badge']) ?></span>
+                    <?php endif; ?>
+                </div>
+            </article>
+            <?php endforeach; ?>
+        </div>
     </div>
 </section>
 

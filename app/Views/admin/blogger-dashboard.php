@@ -1,117 +1,113 @@
 <?php $adminPath = config('app.admin_path'); ?>
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-<style>
-.ql-container { min-height: 200px; background: #fff; border-radius: 0 0 8px 8px; }
-.ql-toolbar { border-radius: 8px 8px 0 0; background: #f8fafc; }
-</style>
 
-<div class="admin-section">
-    <h2>📝 Blog Yazılarım</h2>
-    <p style="color:#8fa0b4;margin:0 0 24px;">Sadece size ait blog yazılarını görebilir ve düzenleyebilirsiniz.</p>
-    <button type="button" class="admin-btn" onclick="openBlogForm()">+ Yeni Blog Yazısı</button>
-
-    <div id="blogForm" style="display:none;margin-top:18px;padding:24px;border:1px solid #223144;border-radius:8px;background:#0d1c2b;">
-        <form method="POST" action="<?= $adminPath ?>/blogs/save" enctype="multipart/form-data">
-            <?= csrf() ?>
-            <input type="hidden" name="id" id="blog_id">
-            <div style="display:grid;gap:14px;">
-                <div>
-                    <label>Başlık</label>
-                    <input name="title" id="blog_title" required style="width:100%;padding:10px 14px;border:1px solid #334256;border-radius:8px;background:#151f2d;color:#fff;font-size:15px;">
-                </div>
-                <div>
-                    <label>Slug (opsiyonel)</label>
-                    <input name="slug" id="blog_slug" style="width:100%;padding:10px 14px;border:1px solid #334256;border-radius:8px;background:#151f2d;color:#fff;font-size:15px;">
-                </div>
-                <div>
-                    <label>Özet</label>
-                    <textarea name="summary" id="blog_summary" rows="2" style="width:100%;padding:10px 14px;border:1px solid #334256;border-radius:8px;background:#151f2d;color:#fff;font-size:15px;resize:vertical;"></textarea>
-                </div>
-                <div>
-                    <label>Kapak Görseli (URL veya dosya)</label>
-                    <input name="cover_image" id="blog_cover" placeholder="https://..." style="width:100%;padding:10px 14px;border:1px solid #334256;border-radius:8px;background:#151f2d;color:#fff;font-size:15px;margin-bottom:8px;">
-                    <input type="file" name="cover_image_file" accept="image/*" style="color:#8fa0b4;">
-                </div>
-                <div>
-                    <label>İçerik</label>
-                    <div id="quillEditor" style="border:1px solid #334256;border-radius:8px;background:#fff;min-height:200px;"></div>
-                    <textarea name="content" id="blog_content" style="display:none;"></textarea>
-                </div>
-                <div style="display:flex;gap:12px;">
-                    <div>
-                        <label>Yayın Tarihi</label>
-                        <input type="datetime-local" name="published_at" id="blog_pubdate" style="padding:10px 14px;border:1px solid #334256;border-radius:8px;background:#151f2d;color:#fff;font-size:15px;">
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;padding-top:22px;">
-                        <input type="checkbox" name="is_published" id="blog_pub" value="1" checked>
-                        <label for="blog_pub" style="margin:0;">Yayınla</label>
-                    </div>
-                </div>
-                <div style="display:flex;gap:10px;">
-                    <button type="submit" class="admin-btn">Kaydet</button>
-                    <button type="button" class="admin-btn" style="background:#334256;" onclick="document.getElementById('blogForm').style.display='none'">İptal</button>
-                </div>
-            </div>
-        </form>
+<header class="admin-header">
+    <a class="brand" href="<?= url('/') ?>"><span>pratik</span><strong>gümrük</strong></a>
+    <div class="header-right">
+        <span style="color:var(--text-muted);font-size:14px;font-weight:700">✍️ <?= e($_SESSION['admin_username'] ?? '') ?></span>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Tema değiştir" aria-label="Tema değiştir">
+            <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <form method="post" action="<?= admin_url('logout') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><button class="btn-logout">Çıkış</button></form>
     </div>
+</header>
 
-    <table class="admin-table" style="margin-top:18px;">
-        <thead><tr><th>ID</th><th>Başlık</th><th>Durum</th><th>Tarih</th><th></th></tr></thead>
-        <tbody>
-        <?php foreach ($posts as $p): ?>
-            <tr>
-                <td><?= $p['id'] ?></td>
-                <td><?= e($p['title']) ?></td>
-                <td><?= $p['is_published'] ? '<span style="color:#05ad71">Yayında</span>' : '<span style="color:#e5a019">Taslak</span>' ?></td>
-                <td><?= e($p['published_at']) ?></td>
-                <td>
-                    <button class="admin-btn admin-btn--sm" onclick='editBlog(<?= json_encode($p, JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE) ?>)'>Düzenle</button>
-                </td>
-            </tr>
+<main class="admin-main">
+    <?php if (!empty($_SESSION['flash'])): ?><div class="flash"><?= e($_SESSION['flash']); unset($_SESSION['flash']); ?></div><?php endif; ?>
+    <h1>Blog Yazılarım</h1>
+
+    <section class="panel">
+        <h2>✍️ Yazılarım</h2>
+        <p class="help">Sadece size ait blog yazılarını görebilir ve düzenleyebilirsiniz.</p>
+
+        <?php foreach ($posts as $post): ?>
+            <details class="edit-row">
+                <summary><?= e($post['title']) ?> <small><?= $post['is_published'] ? '● Yayında' : '○ Taslak' ?></small></summary>
+                <form method="post" action="<?= admin_url('blogs/save') ?>" class="grid-form" enctype="multipart/form-data">
+                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                    <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
+                    <label>Başlık<input name="title" value="<?= e($post['title']) ?>" required></label>
+                    <label>Slug<input name="slug" value="<?= e($post['slug']) ?>"></label>
+                    <label>Yayın tarihi<input name="published_at" value="<?= e($post['published_at']) ?>"></label>
+                    <label>Kapak görsel URL<input name="cover_image" value="<?= e($post['cover_image']) ?>" placeholder="URL veya aşağıdan dosya yükleyin"></label>
+                    <label class="wide">Kapak görseli yükle<input type="file" name="cover_image_file" accept="image/*"></label>
+                    <?php if (!empty($post['cover_image'])): ?>
+                        <div class="wide" style="padding:0 18px 8px">
+                            <img src="<?= e(strpos($post['cover_image'], 'http') === 0 ? $post['cover_image'] : asset($post['cover_image'])) ?>" style="max-height:120px;border-radius:8px;border:1px solid var(--border)">
+                        </div>
+                    <?php endif; ?>
+                    <label class="wide">Özet<textarea name="summary"><?= e($post['summary']) ?></textarea></label>
+                    <label class="wide">İçerik
+                        <div id="quillEditor-<?= $post['id'] ?>" class="quill-box"><?= $post['content'] ?></div>
+                        <textarea name="content" class="quill-content" style="display:none"><?= e($post['content']) ?></textarea>
+                    </label>
+                    <label class="check"><input type="checkbox" name="is_published" value="1" <?= $post['is_published'] ? 'checked' : '' ?>> Yayında</label>
+                    <button>Kaydet</button>
+                </form>
+                <form method="post" action="<?= admin_url('blogs/delete') ?>" onsubmit="return confirm('Silinsin mi?')"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int) $post['id'] ?>"><button class="danger">Sil</button></form>
+            </details>
         <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+
+        <details class="edit-row create">
+            <summary>+ Yeni blog yazısı ekle</summary>
+            <form method="post" action="<?= admin_url('blogs/save') ?>" class="grid-form" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                <label>Başlık<input name="title" required></label>
+                <label>Slug<input name="slug"></label>
+                <label>Yayın tarihi<input name="published_at" value="<?= e(date('Y-m-d H:i:s')) ?>"></label>
+                <label>Kapak görsel URL<input name="cover_image" placeholder="URL veya aşağıdan dosya yükleyin"></label>
+                <label class="wide">Kapak görseli yükle<input type="file" name="cover_image_file" accept="image/*"></label>
+                <label class="wide">Özet<textarea name="summary"></textarea></label>
+                <label class="wide">İçerik
+                    <div id="quillEditor-new" class="quill-box"></div>
+                    <textarea name="content" class="quill-content" style="display:none"></textarea>
+                </label>
+                <label class="check"><input type="checkbox" name="is_published" value="1" checked> Yayında</label>
+                <button>Kaydet</button>
+            </form>
+        </details>
+    </section>
+</main>
+
+<style>
+.quill-box {
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    min-height: 200px;
+    background: var(--bg-input);
+    color: var(--text);
+}
+.ql-toolbar.ql-snow {
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    background: var(--bg-panel);
+}
+.ql-container.ql-snow { border: none; }
+.ql-editor { min-height: 180px; font-size: 15px; line-height: 1.6; }
+[data-theme="dark"] .ql-snow .ql-stroke { stroke: var(--text-muted); }
+[data-theme="dark"] .ql-snow .ql-fill { fill: var(--text-muted); }
+[data-theme="dark"] .ql-snow .ql-picker-label { color: var(--text-muted); }
+</style>
 
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
-let quill;
 document.addEventListener('DOMContentLoaded', function() {
-    quill = new Quill('#quillEditor', {
-        theme: 'snow',
-        modules: { toolbar: [
-            [{ header: [2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['blockquote', 'link', 'image'],
-            ['clean']
-        ]}
-    });
-    document.querySelector('#blogForm form').addEventListener('submit', function() {
-        document.getElementById('blog_content').value = quill.root.innerHTML;
+    const toolbarOpts = [
+        [{ header: [2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['blockquote', 'link', 'image'],
+        ['clean']
+    ];
+
+    document.querySelectorAll('.quill-box').forEach(el => {
+        const quill = new Quill(el, { theme: 'snow', modules: { toolbar: toolbarOpts } });
+        const form = el.closest('form');
+        const hidden = form.querySelector('.quill-content');
+        // Load existing content
+        if (hidden.value) quill.root.innerHTML = hidden.value;
+        form.addEventListener('submit', () => { hidden.value = quill.root.innerHTML; });
     });
 });
-
-function openBlogForm() {
-    document.getElementById('blogForm').style.display = 'block';
-    document.getElementById('blog_id').value = '';
-    document.getElementById('blog_title').value = '';
-    document.getElementById('blog_slug').value = '';
-    document.getElementById('blog_summary').value = '';
-    document.getElementById('blog_cover').value = '';
-    document.getElementById('blog_pub').checked = true;
-    quill.root.innerHTML = '';
-}
-
-function editBlog(p) {
-    document.getElementById('blogForm').style.display = 'block';
-    document.getElementById('blog_id').value = p.id;
-    document.getElementById('blog_title').value = p.title;
-    document.getElementById('blog_slug').value = p.slug;
-    document.getElementById('blog_summary').value = p.summary;
-    document.getElementById('blog_cover').value = p.cover_image || '';
-    document.getElementById('blog_pub').checked = !!parseInt(p.is_published);
-    document.getElementById('blog_pubdate').value = (p.published_at || '').replace(' ', 'T');
-    quill.root.innerHTML = p.content || '';
-}
 </script>

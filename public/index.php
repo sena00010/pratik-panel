@@ -30,5 +30,7 @@ $router->post($adminPath . '/integrations/save', [AdminController::class, 'saveI
 $router->post($adminPath . '/integrations/delete', [AdminController::class, 'deleteIntegration']);
 $router->post($adminPath . '/audience/save', [AdminController::class, 'saveAudience']);
 $router->post($adminPath . '/audience/delete', [AdminController::class, 'deleteAudience']);
+$router->post($adminPath . '/testimonials/save', [AdminController::class, 'saveTestimonial']);
+$router->post($adminPath . '/testimonials/delete', [AdminController::class, 'deleteTestimonial']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');

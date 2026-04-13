@@ -20,6 +20,7 @@ final class PublicController
             'landingBlocks' => $this->repo->landingBlocks(),
             'integrations' => $this->repo->integrations(),
             'audienceCards' => $this->repo->audienceCards(),
+            'testimonials' => $this->repo->testimonials(),
             'seo' => $this->repo->seo('home'),
         ]);
     }

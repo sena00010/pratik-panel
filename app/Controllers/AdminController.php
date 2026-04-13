@@ -41,6 +41,7 @@ final class AdminController
             'posts' => $this->repo->blogPosts(false),
             'integrations' => $this->repo->integrations(false),
             'audienceCards' => $this->repo->audienceCards(false),
+            'testimonials' => $this->repo->testimonials(false),
             'seoRows' => Database::pdo()->query('SELECT * FROM seo_meta ORDER BY page ASC, slug ASC')->fetchAll(),
             'landingRows' => Database::pdo()->query('SELECT * FROM landing_blocks ORDER BY id ASC')->fetchAll(),
             'adminUsers' => Database::pdo()->query('SELECT id, username, role, display_name, created_at FROM admin_users ORDER BY id ASC')->fetchAll(),
@@ -53,14 +54,31 @@ final class AdminController
         verify_csrf();
         $username = trim((string) ($_POST['username'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
+        $loginRole = ($_POST['login_role'] ?? 'admin');
         $user = $this->repo->adminUser($username);
 
         if ($user && password_verify($password, $user['password_hash'])) {
+            $actualRole = $user['role'] ?? 'admin';
+
+            // Role mismatch check
+            if ($loginRole === 'blogger' && $actualRole !== 'blogger') {
+                $_SESSION['flash'] = 'Bu hesap blog yazarı değil. Yönetim paneli olarak giriş yapın.';
+                redirect(config('app.admin_path'));
+                return;
+            }
+            if ($loginRole === 'admin' && $actualRole === 'blogger') {
+                $_SESSION['flash'] = 'Bu hesap yönetici değil. Blog yazarı olarak giriş yapın.';
+                redirect(config('app.admin_path'));
+                return;
+            }
+
             session_regenerate_id(true);
             $_SESSION['admin_id'] = (int) $user['id'];
-            $_SESSION['admin_role'] = $user['role'] ?? 'admin';
+            $_SESSION['admin_role'] = $actualRole;
             $_SESSION['admin_username'] = $user['username'];
-            $_SESSION['flash'] = 'Yönetim paneline hoş geldiniz.';
+            $_SESSION['flash'] = $actualRole === 'blogger'
+                ? 'Blog paneline hoş geldiniz.'
+                : 'Yönetim paneline hoş geldiniz.';
         } else {
             $_SESSION['flash'] = 'Kullanıcı adı veya şifre hatalı.';
         }
@@ -318,6 +336,28 @@ final class AdminController
         $this->guardAdmin();
         Database::pdo()->prepare('DELETE FROM audience_cards WHERE id = ?')->execute([(int) ($_POST['id'] ?? 0)]);
         $this->done('Hedef kitle kartı silindi.');
+    }
+
+    public function saveTestimonial(): void
+    {
+        $this->guardAdmin();
+        $data = $this->postData(['author_name', 'author_title', 'author_location', 'author_initials', 'quote', 'rating', 'plan_badge', 'badge_color', 'sort_order', 'is_active']);
+
+        if (!empty($_POST['id'])) {
+            $stmt = Database::pdo()->prepare('UPDATE testimonials SET author_name=?, author_title=?, author_location=?, author_initials=?, quote=?, rating=?, plan_badge=?, badge_color=?, sort_order=?, is_active=? WHERE id=?');
+            $stmt->execute([$data['author_name'], $data['author_title'], $data['author_location'], $data['author_initials'], $data['quote'], (int)($data['rating'] ?: 5), $data['plan_badge'], $data['badge_color'], (int)$data['sort_order'], (int)!empty($data['is_active']), (int)$_POST['id']]);
+        } else {
+            $stmt = Database::pdo()->prepare('INSERT INTO testimonials (author_name, author_title, author_location, author_initials, quote, rating, plan_badge, badge_color, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?,?)');
+            $stmt->execute([$data['author_name'], $data['author_title'], $data['author_location'], $data['author_initials'], $data['quote'], (int)($data['rating'] ?: 5), $data['plan_badge'], $data['badge_color'], (int)$data['sort_order'], (int)!empty($data['is_active'])]);
+        }
+        $this->done('Yorum kaydedildi.');
+    }
+
+    public function deleteTestimonial(): void
+    {
+        $this->guardAdmin();
+        Database::pdo()->prepare('DELETE FROM testimonials WHERE id = ?')->execute([(int) ($_POST['id'] ?? 0)]);
+        $this->done('Yorum silindi.');
     }
 
     public function deleteAdmin(): void

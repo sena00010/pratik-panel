@@ -120,4 +120,12 @@ final class ContentRepository
         $stmt->execute([$authorId]);
         return $stmt->fetchAll();
     }
+
+    public function testimonials(bool $activeOnly = true): array
+    {
+        return cache_remember('testimonials_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
+            $sql = 'SELECT * FROM testimonials' . ($activeOnly ? ' WHERE is_active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+            return Database::pdo()->query($sql)->fetchAll();
+        });
+    }
 }
