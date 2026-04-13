@@ -24,7 +24,16 @@ function render_blog_content(string $content): string {
 <?php endif; ?>
 <section class="blog-detail-header">
     <div class="blog-detail-header__inner">
-        <time><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;color:rgba(255,255,255,0.8)">
+            <?php if (!empty($post['author_photo'])): ?>
+            <img src="<?= e($post['author_photo']) ?>" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1)">
+            <?php else: ?>
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'A', 0, 1)) ?></div>
+            <?php endif; ?>
+            <span style="font-weight:700"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Admin') ?></span>
+            <span style="color:rgba(255,255,255,0.3)">·</span>
+            <time style="font-weight:500"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+        </div>
         <h1><?= e($post['title']) ?></h1>
         <p class="blog-detail-lead"><?= e($post['summary']) ?></p>
     </div>

@@ -25,7 +25,14 @@
                     <?php endif; ?>
                     <div class="blog-card__body">
                         <div class="blog-card__meta">
-                            <time><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+                            <div style="display:flex;align-items:center;gap:6px">
+                                <?php if (!empty($post['author_photo'])): ?>
+                                <img src="<?= e($post['author_photo']) ?>" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
+                                <?php else: ?>
+                                <div style="width:20px;height:20px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'A', 0, 1)) ?></div>
+                                <?php endif; ?>
+                                <time style="font-size:12px"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+                            </div>
                             <span class="blog-card__read"><?= max(1, (int)(mb_strlen($post['content'] ?? '') / 800)) ?> dk okuma</span>
                         </div>
                         <h2><?= e($post['title']) ?></h2>

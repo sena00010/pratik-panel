@@ -3,7 +3,14 @@
 <header class="admin-header">
     <a class="brand" href="<?= url('/') ?>"><span>pratik</span><strong>gümrük</strong></a>
     <div class="header-right">
-        <span style="color:var(--text-muted);font-size:14px;font-weight:700">✍️ <?= e($_SESSION['admin_username'] ?? '') ?></span>
+        <div style="display:flex;align-items:center;gap:10px">
+            <?php if (!empty($_SESSION['admin_profile_photo'])): ?>
+            <img src="<?= e($_SESSION['admin_profile_photo']) ?>" alt="Profil" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+            <?php else: ?>
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px"><?= mb_strtoupper(mb_substr($_SESSION['admin_username'] ?? 'A', 0, 1)) ?></div>
+            <?php endif; ?>
+            <span style="color:var(--text-muted);font-size:14px;font-weight:700"><?= e($_SESSION['admin_username'] ?? '') ?></span>
+        </div>
         <button class="theme-toggle" onclick="toggleTheme()" title="Tema değiştir" aria-label="Tema değiştir">
             <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
             <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -16,6 +23,32 @@
     <?php if (!empty($_SESSION['flash'])): ?><div class="flash"><?= e($_SESSION['flash']); unset($_SESSION['flash']); ?></div><?php endif; ?>
 
     <h1>Blog Yazılarım</h1>
+
+    <!-- Profil Bölümü -->
+    <section class="panel" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;padding:24px;margin-bottom:24px">
+        <div style="position:relative;width:80px;height:80px;flex-shrink:0">
+            <?php if (!empty($_SESSION['admin_profile_photo'])): ?>
+            <img src="<?= e($_SESSION['admin_profile_photo']) ?>" id="profile-img-preview" alt="Profil" style="width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--border)">
+            <?php else: ?>
+            <div id="profile-img-preview-blank" style="width:100%;height:100%;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px"><?= mb_strtoupper(mb_substr($_SESSION['admin_username'] ?? 'A', 0, 1)) ?></div>
+            <img src="" id="profile-img-preview" alt="Profil" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--border)">
+            <?php endif; ?>
+        </div>
+        <div style="flex:1;min-width:250px">
+            <h2 style="font-size:18px;margin:0 0 6px 0;border:0;padding:0">Profiliniz</h2>
+            <p style="margin:0 0 16px 0;font-size:13px;color:var(--text-muted);line-height:1.5">Blog sayfasında adınızla birlikte görünecek bir fotoğraf yükleyebilirsiniz (JPEG, PNG).</p>
+            <form method="post" action="<?= admin_url('profile/save') ?>" id="profile-form" style="display:flex;gap:12px;align-items:center">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="profile_photo" id="profile_photo_val" value="<?= e($_SESSION['admin_profile_photo'] ?? '') ?>">
+                <label style="cursor:pointer;background:var(--bg-input);padding:10px 16px;border-radius:8px;font-weight:700;font-size:13px;border:1px solid var(--border);transition:border-color .15s" onmouseover="this.style.borderColor='var(--brand)'" onmouseout="this.style.borderColor='var(--border)'">
+                    📷 Fotoğraf Seç
+                    <input type="file" style="display:none" accept="image/jpeg,image/png,image/webp" onchange="uploadProfilePhoto(this)">
+                </label>
+                <div id="profile-upload-loading" style="display:none;font-size:13px;font-weight:700;color:var(--brand)">⏳ Yükleniyor...</div>
+                <button class="btn" style="min-width:0;padding:10px 24px;font-size:13px">Kaydet</button>
+            </form>
+        </div>
+    </section>
 
     <!-- Yazılar Listesi -->
     <section class="panel" id="sec-posts">
@@ -320,5 +353,34 @@ function openEditor(post) {
 function closeEditor() {
     document.getElementById('sec-editor').style.display = 'none';
     document.getElementById('sec-posts').style.display = 'block';
+}
+
+async function uploadProfilePhoto(input) {
+    if(!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const fd = new FormData();
+    fd.append('image', file);
+    fd.append('_csrf', '<?= e(csrf_token()) ?>');
+
+    document.getElementById('profile-upload-loading').style.display = 'block';
+    
+    try {
+        const res = await fetch('<?= admin_url('upload/image') ?>', { method: 'POST', body: fd});
+        const data = await res.json();
+        
+        if(data.success && data.url) {
+            document.getElementById('profile_photo_val').value = data.url;
+            document.getElementById('profile-img-preview').src = data.url;
+            document.getElementById('profile-img-preview').style.display = 'block';
+            let blank = document.getElementById('profile-img-preview-blank');
+            if(blank) blank.style.display = 'none';
+        } else {
+            alert('Yükleme hatası: ' + (data.error || 'Bilinmiyor'));
+        }
+    } catch(err) {
+        alert('Sunucu hatası oluştu!');
+    } finally {
+        document.getElementById('profile-upload-loading').style.display = 'none';
+    }
 }
 </script>

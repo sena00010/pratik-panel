@@ -29,6 +29,7 @@ $router->post($adminPath . '/seo/save', [AdminController::class, 'saveSeo']);
 $router->post($adminPath . '/landing/save', [AdminController::class, 'saveLanding']);
 $router->post($adminPath . '/admins/save', [AdminController::class, 'saveAdmin']);
 $router->post($adminPath . '/admins/delete', [AdminController::class, 'deleteAdmin']);
+$router->post($adminPath . '/profile/save', [AdminController::class, 'saveProfile']);
 $router->post($adminPath . '/upload/image', [AdminController::class, 'uploadImage']);
 $router->post($adminPath . '/integrations/save', [AdminController::class, 'saveIntegration']);
 $router->post($adminPath . '/integrations/delete', [AdminController::class, 'deleteIntegration']);

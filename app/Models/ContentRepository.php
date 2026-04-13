@@ -69,14 +69,20 @@ final class ContentRepository
     public function blogPosts(bool $activeOnly = true): array
     {
         return cache_remember('blog_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
-            $sql = 'SELECT * FROM blog_posts' . ($activeOnly ? " WHERE status = 'approved'" : '') . ' ORDER BY published_at DESC, id DESC';
+            $sql = 'SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo ' .
+                   'FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id' . 
+                   ($activeOnly ? " WHERE bp.status = 'approved'" : '') . 
+                   ' ORDER BY bp.published_at DESC, bp.id DESC';
             return Database::pdo()->query($sql)->fetchAll();
         });
     }
 
     public function blogPost(string $slug): ?array
     {
-        $stmt = Database::pdo()->prepare("SELECT * FROM blog_posts WHERE slug = ? AND status = 'approved' LIMIT 1");
+        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo 
+                FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id 
+                WHERE bp.slug = ? AND bp.status = 'approved' LIMIT 1";
+        $stmt = Database::pdo()->prepare($sql);
         $stmt->execute([$slug]);
         $post = $stmt->fetch();
         return $post ?: null;

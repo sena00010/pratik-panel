@@ -100,6 +100,7 @@ final class AdminController
             $_SESSION['admin_id'] = (int) $user['id'];
             $_SESSION['admin_role'] = $actualRole;
             $_SESSION['admin_username'] = $user['username'];
+            $_SESSION['admin_profile_photo'] = $user['profile_photo'] ?? null;
             $_SESSION['flash'] = $actualRole === 'blogger'
                 ? 'Blog paneline hoş geldiniz.'
                 : 'Yönetim paneline hoş geldiniz.';
@@ -247,6 +248,16 @@ final class AdminController
         $id = (int) ($_POST['id'] ?? 0);
         Database::pdo()->prepare('UPDATE admin_users SET auto_approve = IF(auto_approve = 1, 0, 1) WHERE id = ? AND role = "blogger"')->execute([$id]);
         $this->done('Otomatik onay ayarı güncellendi.');
+    }
+
+    public function saveProfile(): void
+    {
+        $this->guard();
+        $id = $_SESSION['admin_id'];
+        $photo = trim((string)($_POST['profile_photo'] ?? ''));
+        Database::pdo()->prepare('UPDATE admin_users SET profile_photo = ? WHERE id = ?')->execute([$photo ?: null, $id]);
+        $_SESSION['admin_profile_photo'] = $photo ?: null;
+        $this->done('Profil güncellendi.');
     }
 
     public function uploadImage(): void

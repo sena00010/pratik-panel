@@ -84,6 +84,7 @@ $statusLabels = [
                     <th style="text-align:left;padding:14px 16px;font-weight:800;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">Yazar</th>
                     <th style="text-align:center;padding:14px 16px;font-weight:800;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">Durum</th>
                     <th style="text-align:right;padding:14px 16px;font-weight:800;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">Tarih</th>
+                    <th style="text-align:right;padding:14px 16px;font-weight:800;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">İşlemler</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,10 +95,18 @@ $statusLabels = [
                     <td style="padding:12px 16px;color:var(--text-muted)"><?= e($ap['author_name'] ?: $ap['author_username'] ?: '-') ?></td>
                     <td style="padding:12px 16px;text-align:center"><span style="padding:3px 12px;border-radius:6px;font-size:11px;font-weight:800;background:<?= $s[1] ?>;color:<?= $s[2] ?>"><?= $s[0] ?></span></td>
                     <td style="padding:12px 16px;text-align:right;color:var(--text-muted);font-size:12px"><?= !empty($ap['created_at']) ? date('d.m.Y', strtotime($ap['created_at'])) : '-' ?></td>
+                    <td style="padding:12px 16px;text-align:right">
+                        <?php if (($ap['status'] ?? '') === 'approved' || ($ap['status'] ?? '') === 'pending'): ?>
+                        <form method="post" action="<?= admin_url('blogs/reject') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button style="border:0;background:rgba(239,68,68,.1);color:#ef4444;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer" onclick="return confirm('Bu yazıyı yayından kaldırmak / reddetmek istediğinize emin misiniz?')">❌ Kaldır / Reddet</button></form>
+                        <?php endif; ?>
+                        <?php if (($ap['status'] ?? '') === 'rejected' || ($ap['status'] ?? '') === 'draft'): ?>
+                        <form method="post" action="<?= admin_url('blogs/approve') ?>" style="display:inline-block"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$ap['id'] ?>"><button style="border:0;background:rgba(5,173,113,.1);color:#05ad71;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer">✅ Onayla & Yayınla</button></form>
+                        <?php endif; ?>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($allPosts)): ?>
-                <tr><td colspan="4" style="padding:24px;text-align:center;color:var(--text-muted)">Henüz blog yazısı yok.</td></tr>
+                <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted)">Henüz blog yazısı yok.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
