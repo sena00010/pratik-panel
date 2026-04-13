@@ -11,7 +11,7 @@ $router->get('/blog/{slug}', [PublicController::class, 'blogDetail']);
 $router->get('/modul/{slug}', [PublicController::class, 'moduleDetail']);
 
 $adminPath = config('app.admin_path');
-$router->get('/login', function() use ($adminPath) { redirect($adminPath); });
+$router->get('/login', [AdminController::class, 'redirectToAdmin']);
 $router->get($adminPath, [AdminController::class, 'dashboard']);
 $router->post($adminPath . '/login', [AdminController::class, 'login']);
 $router->post($adminPath . '/logout', [AdminController::class, 'logout']);
@@ -27,16 +27,6 @@ $router->post($adminPath . '/admins/save', [AdminController::class, 'saveAdmin']
 $router->post($adminPath . '/admins/delete', [AdminController::class, 'deleteAdmin']);
 $router->post($adminPath . '/upload/image', [AdminController::class, 'uploadImage']);
 
-// Deploy test rotasi
-$router->get('/deploy-test', function() {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'ok',
-        'message' => 'Deploy basarili! 🚀',
-        'time' => date('Y-m-d H:i:s'),
-        'server' => gethostname()
-    ]);
-    exit;
-});
+$router->get('/deploy-test', [PublicController::class, 'deployTest']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');

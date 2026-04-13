@@ -11,7 +11,7 @@ $router->get('/blog/{slug}', [PublicController::class, 'blogDetail']);
 $router->get('/modul/{slug}', [PublicController::class, 'moduleDetail']);
 
 $adminPath = config('app.admin_path');
-$router->get('/login', function() use ($adminPath) { redirect($adminPath); });
+$router->get('/login', [AdminController::class, 'redirectToAdmin']);
 $router->get($adminPath, [AdminController::class, 'dashboard']);
 $router->post($adminPath . '/login', [AdminController::class, 'login']);
 $router->post($adminPath . '/logout', [AdminController::class, 'logout']);

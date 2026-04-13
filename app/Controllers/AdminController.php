@@ -10,6 +10,11 @@ final class AdminController
         $this->repo = new ContentRepository();
     }
 
+    public function redirectToAdmin(): void
+    {
+        redirect(config('app.admin_path'));
+    }
+
     public function dashboard(): void
     {
         if (!$this->isLoggedIn()) {

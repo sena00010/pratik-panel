@@ -63,4 +63,16 @@ final class PublicController
             'seo' => $this->repo->seo('blog_detail', $slug),
         ]);
     }
+
+    public function deployTest(): void
+    {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'ok',
+            'message' => 'Deploy basarili!',
+            'time' => date('Y-m-d H:i:s'),
+            'server' => gethostname()
+        ]);
+        exit;
+    }
 }
