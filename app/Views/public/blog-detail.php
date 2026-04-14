@@ -1,14 +1,22 @@
 <?php
-// Render content with proper paragraph separation
-// Content uses \n\n for paragraph breaks
+// Render content with proper paragraph separation and heading IDs for TOC
 function render_blog_content(string $content): string {
     $paragraphs = preg_split('/\n{2,}/', $content);
     $html = '';
     foreach ($paragraphs as $p) {
         $p = trim($p);
         if ($p === '') continue;
+        // Check if it looks like a heading (## or ###)
+        if (preg_match('/^(#{2,3})\s+(.+)$/', $p, $hMatch)) {
+            $level = strlen($hMatch[1]) === 2 ? 'h2' : 'h3';
+            $html .= '<' . $level . '>' . e($hMatch[2]) . '</' . $level . '>';
+        }
         // Check if it's an image tag (already HTML)
-        if (strpos($p, '<img') === 0 || strpos($p, '<figure') === 0) {
+        elseif (strpos($p, '<img') === 0 || strpos($p, '<figure') === 0) {
+            // Ensure alt attribute exists
+            if (strpos($p, 'alt=') === false) {
+                $p = preg_replace('/<img /', '<img alt="Blog görseli" ', $p);
+            }
             $html .= $p;
         } else {
             $html .= '<p>' . nl2br(e($p)) . '</p>';
@@ -16,23 +24,31 @@ function render_blog_content(string $content): string {
     }
     return $html;
 }
+
+$renderedContent = render_blog_content($post['content']);
+$tocData = SeoHelper::generateToc($renderedContent);
+$tocHtml = $tocData['toc'];
+$articleHtml = $tocData['content'];
+$relatedPosts = $relatedPosts ?? [];
 ?>
 <?php if (!empty($post['cover_image'])): ?>
 <div class="blog-hero-image">
-    <img src="<?= e(strpos($post['cover_image'], 'http') === 0 ? $post['cover_image'] : asset($post['cover_image'])) ?>" alt="<?= e($post['title']) ?>">
+    <img src="<?= e(strpos($post['cover_image'], 'http') === 0 ? $post['cover_image'] : asset($post['cover_image'])) ?>" alt="<?= e($post['title']) ?> - kapak görseli">
 </div>
 <?php endif; ?>
 <section class="blog-detail-header">
     <div class="blog-detail-header__inner">
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;color:rgba(255,255,255,0.8)">
             <?php if (!empty($post['author_photo'])): ?>
-            <img src="<?= e($post['author_photo']) ?>" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1)">
+            <img src="<?= e($post['author_photo']) ?>" alt="<?= e($post['author_name'] ?: $post['author_username'] ?: 'Yazar') ?> profil fotoğrafı" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1)">
             <?php else: ?>
             <div style="width:36px;height:36px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'A', 0, 1)) ?></div>
             <?php endif; ?>
             <span style="font-weight:700"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Admin') ?></span>
             <span style="color:rgba(255,255,255,0.3)">·</span>
-            <time style="font-weight:500"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+            <time datetime="<?= e(date('Y-m-d', strtotime($post['published_at']))) ?>" style="font-weight:500"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+            <span style="color:rgba(255,255,255,0.3)">·</span>
+            <span style="font-weight:500"><?= max(1, (int)(mb_strlen($post['content'] ?? '') / 800)) ?> dk okuma</span>
         </div>
         <h1><?= e($post['title']) ?></h1>
         <p class="blog-detail-lead"><?= e($post['summary']) ?></p>
@@ -40,9 +56,61 @@ function render_blog_content(string $content): string {
 </section>
 <article class="blog-detail-body">
     <div class="blog-detail-content">
-        <?= render_blog_content($post['content']) ?>
+        <?php if ($tocHtml): ?>
+        <?= $tocHtml ?>
+        <?php endif; ?>
+        <?= $articleHtml ?>
     </div>
 </article>
+
+<?php if (!empty($relatedPosts)): ?>
+<section class="section related-posts">
+    <div class="section-head centered">
+        <span class="eyebrow">BENZer YAZILAR</span>
+        <h2>Diğer yazılarımız</h2>
+    </div>
+    <div class="related-posts-grid">
+        <?php foreach ($relatedPosts as $i => $rp): ?>
+        <article class="blog-card" style="--delay: <?= $i * 0.08 ?>s">
+            <a href="<?= url('/blog/' . $rp['slug']) ?>" class="blog-card__inner">
+                <?php if (!empty($rp['cover_image'])): ?>
+                <div class="blog-card__img">
+                    <img src="<?= e(strpos($rp['cover_image'], 'http') === 0 ? $rp['cover_image'] : asset($rp['cover_image'])) ?>" alt="<?= e($rp['title']) ?> - kapak görseli" loading="lazy">
+                </div>
+                <?php else: ?>
+                <div class="blog-card__img blog-card__img--gradient">
+                    <div class="blog-card__icon">
+                        <?php
+                            $icons = ['📋', '📦', '🔍', '⚖️', '📊', '🛃'];
+                            echo $icons[$i % count($icons)];
+                        ?>
+                    </div>
+                    <div class="blog-card__pattern"></div>
+                </div>
+                <?php endif; ?>
+                <div class="blog-card__body">
+                    <div class="blog-card__meta">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <?php if (!empty($rp['author_photo'])): ?>
+                            <img src="<?= e($rp['author_photo']) ?>" alt="<?= e($rp['author_name'] ?: 'Yazar') ?>" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
+                            <?php else: ?>
+                            <div style="width:20px;height:20px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px"><?= mb_strtoupper(mb_substr($rp['author_name'] ?: $rp['author_username'] ?: 'A', 0, 1)) ?></div>
+                            <?php endif; ?>
+                            <time style="font-size:12px"><?= e(date('d M Y', strtotime($rp['published_at']))) ?></time>
+                        </div>
+                        <span class="blog-card__read"><?= max(1, (int)(mb_strlen($rp['content'] ?? '') / 800)) ?> dk okuma</span>
+                    </div>
+                    <h3><?= e($rp['title']) ?></h3>
+                    <p><?= e(mb_substr($rp['summary'], 0, 120)) ?>...</p>
+                    <span class="blog-card__cta">Devamını Oku <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+            </a>
+        </article>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
+
 <section class="blog-detail-footer">
     <a href="<?= url('/blog') ?>" class="blog-back-link">← Tüm Yazılara Dön</a>
 </section>

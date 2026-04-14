@@ -12,16 +12,20 @@ final class PublicController
 
     public function home(): void
     {
+        $faqs = $this->repo->faqs();
         View::render('public/home', [
-            'settings' => $this->repo->siteSettings(),
-            'modules' => $this->repo->modules(),
-            'faqs' => $this->repo->faqs(),
-            'posts' => array_slice($this->repo->blogPosts(), 0, 3),
+            'settings'      => $this->repo->siteSettings(),
+            'modules'       => $this->repo->modules(),
+            'faqs'          => $faqs,
+            'posts'         => array_slice($this->repo->blogPosts(), 0, 3),
             'landingBlocks' => $this->repo->landingBlocks(),
-            'integrations' => $this->repo->integrations(),
+            'integrations'  => $this->repo->integrations(),
             'audienceCards' => $this->repo->audienceCards(),
-            'testimonials' => $this->repo->testimonials(),
-            'seo' => $this->repo->seo('home'),
+            'testimonials'  => $this->repo->testimonials(),
+            'seo'           => $this->repo->seo('home'),
+            'pageType'      => 'home',
+            'breadcrumbs'   => SeoHelper::breadcrumbs('home'),
+            'schemaJson'    => SeoHelper::homeSchema($this->repo->siteSettings(), $faqs),
         ]);
     }
 
@@ -34,20 +38,31 @@ final class PublicController
             return;
         }
 
+        $crumbs = SeoHelper::breadcrumbs('module', ['title' => $module['title'], 'slug' => $module['slug']]);
+
         View::render('public/module', [
-            'settings' => $this->repo->siteSettings(),
-            'module' => $module,
-            'modules' => $this->repo->modules(),
-            'seo' => $this->repo->seo('module', $slug),
+            'settings'    => $this->repo->siteSettings(),
+            'module'      => $module,
+            'modules'     => $this->repo->modules(),
+            'seo'         => $this->repo->seo('module', $slug),
+            'pageType'    => 'module',
+            'breadcrumbs' => $crumbs,
+            'schemaJson'  => SeoHelper::moduleSchema($module) . SeoHelper::breadcrumbSchema($crumbs),
         ]);
     }
 
     public function blog(): void
     {
+        $posts = $this->repo->blogPosts();
+        $crumbs = SeoHelper::breadcrumbs('blog');
+
         View::render('public/blog', [
-            'settings' => $this->repo->siteSettings(),
-            'posts' => $this->repo->blogPosts(),
-            'seo' => $this->repo->seo('blog'),
+            'settings'    => $this->repo->siteSettings(),
+            'posts'       => $posts,
+            'seo'         => $this->repo->seo('blog'),
+            'pageType'    => 'blog',
+            'breadcrumbs' => $crumbs,
+            'schemaJson'  => SeoHelper::blogListSchema($posts) . SeoHelper::breadcrumbSchema($crumbs),
         ]);
     }
 
@@ -68,11 +83,48 @@ final class PublicController
         if (empty($seo['meta_title'])) $seo['meta_title'] = $post['title'] . ' | Pratik Gümrük Blog';
         if (empty($seo['meta_description']) && !empty($post['summary'])) $seo['meta_description'] = mb_substr(strip_tags($post['summary']), 0, 160);
 
+        $crumbs = SeoHelper::breadcrumbs('blog_detail', ['title' => $post['title'], 'slug' => $post['slug']]);
+        $relatedPosts = $this->repo->relatedPosts($slug, 4);
+
         View::render('public/blog-detail', [
-            'settings' => $this->repo->siteSettings(),
-            'post' => $post,
-            'seo' => $seo,
+            'settings'     => $this->repo->siteSettings(),
+            'post'         => $post,
+            'seo'          => $seo,
+            'pageType'     => 'blog_detail',
+            'breadcrumbs'  => $crumbs,
+            'relatedPosts' => $relatedPosts,
+            'schemaJson'   => SeoHelper::blogDetailSchema($post) . SeoHelper::breadcrumbSchema($crumbs),
         ]);
+    }
+
+    /**
+     * Serve sitemap.xml — regenerated daily, cached in storage.
+     */
+    public function sitemap(): void
+    {
+        $cacheFile = __DIR__ . '/../../storage/cache/sitemap.xml';
+
+        // Regenerate if file doesn't exist or is older than 24 hours
+        if (!is_file($cacheFile) || filemtime($cacheFile) + 86400 < time()) {
+            $urls = $this->repo->sitemapUrls();
+            $xml  = SeoHelper::generateSitemapXml($urls);
+            file_put_contents($cacheFile, $xml);
+            $this->repo->recordSitemapGeneration();
+        }
+
+        header('Content-Type: application/xml; charset=UTF-8');
+        readfile($cacheFile);
+        exit;
+    }
+
+    /**
+     * Serve robots.txt
+     */
+    public function robots(): void
+    {
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo SeoHelper::generateRobotsTxt();
+        exit;
     }
 
     public function deployTest(): void

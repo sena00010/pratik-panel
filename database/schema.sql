@@ -191,3 +191,11 @@ INSERT INTO `landing_blocks` (`block_key`, `title`, `payload`) VALUES
   'secondary_button', 'Demo Talep Edin →'
 ))
 ON DUPLICATE KEY UPDATE title = VALUES(title);
+
+-- ─── Sitemap Generation Log ─────────────────────────────
+CREATE TABLE IF NOT EXISTS `sitemap_log` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `generated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_sitemap_date` (`generated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;

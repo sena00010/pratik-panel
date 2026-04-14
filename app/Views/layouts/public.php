@@ -5,6 +5,13 @@ $metaTitle = $seo['meta_title'] ?? ($settings['default_meta_title'] ?? config('a
 $metaDescription = $seo['meta_description'] ?? ($settings['default_meta_description'] ?? '');
 $metaKeywords = $seo['meta_keywords'] ?? ($settings['default_meta_keywords'] ?? '');
 $ogImage = $seo['og_image'] ?? '';
+$pageType = $pageType ?? 'home';
+$breadcrumbs = $breadcrumbs ?? [];
+$schemaJson = $schemaJson ?? '';
+
+// Canonical URL
+$canonicalPath = $_SERVER['REQUEST_URI'] ?? '/';
+$canonicalUrl = SeoHelper::canonical(parse_url($canonicalPath, PHP_URL_PATH) ?: '/');
 ?>
 <!doctype html>
 <html lang="tr">
@@ -14,16 +21,25 @@ $ogImage = $seo['og_image'] ?? '';
     <title><?= e($metaTitle) ?></title>
     <meta name="description" content="<?= e($metaDescription) ?>">
     <meta name="keywords" content="<?= e($metaKeywords) ?>">
+    <link rel="canonical" href="<?= e($canonicalUrl) ?>">
     <meta property="og:title" content="<?= e($metaTitle) ?>">
     <meta property="og:description" content="<?= e($metaDescription) ?>">
+    <meta property="og:url" content="<?= e($canonicalUrl) ?>">
+    <meta property="og:type" content="<?= $pageType === 'blog_detail' ? 'article' : 'website' ?>">
+    <meta property="og:site_name" content="Pratik Gümrük">
+    <meta property="og:locale" content="tr_TR">
     <?php if ($ogImage): ?><meta property="og:image" content="<?= e($ogImage) ?>"><?php endif; ?>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($metaTitle) ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription) ?>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Inter+Tight:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260413h">
-    <script src="<?= asset('js/site.js') ?>?v=20260413b" defer></script>
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260415a">
+    <script src="<?= asset('js/site.js') ?>?v=20260415a" defer></script>
+    <?= $schemaJson ?>
 </head>
 <body>
 <header class="site-header" data-header>
@@ -43,6 +59,9 @@ $ogImage = $seo['og_image'] ?? '';
         <a class="btn btn-primary" href="<?= url('/#fiyatlandirma') ?>">Ücretsiz Deneyin</a>
     </div>
 </header>
+<?php if (!empty($breadcrumbs) && count($breadcrumbs) > 1): ?>
+<?= SeoHelper::renderBreadcrumbHtml($breadcrumbs) ?>
+<?php endif; ?>
 <main>
     <?= $content ?>
 </main>

@@ -3,12 +3,27 @@ declare(strict_types=1);
 
 require __DIR__ . '/app/bootstrap.php';
 
+// ── URL Canonicalization: remove trailing slashes to prevent duplicate content ──
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+if ($requestUri !== '/' && substr($requestUri, -1) === '/') {
+    $cleanUri = rtrim($requestUri, '/');
+    $query = $_SERVER['QUERY_STRING'] ?? '';
+    $redirect = $cleanUri . ($query ? '?' . $query : '');
+    header('HTTP/1.1 301 Moved Permanently');
+    header('Location: ' . $redirect);
+    exit;
+}
+
 $router = new Router();
 
 $router->get('/', [PublicController::class, 'home']);
 $router->get('/blog', [PublicController::class, 'blog']);
 $router->get('/blog/{slug}', [PublicController::class, 'blogDetail']);
 $router->get('/modul/{slug}', [PublicController::class, 'moduleDetail']);
+
+// SEO: sitemap.xml and robots.txt
+$router->get('/sitemap.xml', [PublicController::class, 'sitemap']);
+$router->get('/robots.txt', [PublicController::class, 'robots']);
 
 $adminPath = config('app.admin_path');
 $router->get('/login', [AdminController::class, 'redirectToAdmin']);
@@ -38,4 +53,5 @@ $router->post($adminPath . '/audience/delete', [AdminController::class, 'deleteA
 $router->post($adminPath . '/testimonials/save', [AdminController::class, 'saveTestimonial']);
 $router->post($adminPath . '/testimonials/delete', [AdminController::class, 'deleteTestimonial']);
 
-$router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');
+$router->dispatch($_SERVER['REQUEST_METHOD'], $requestUri);
+

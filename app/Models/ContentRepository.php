@@ -134,4 +134,97 @@ final class ContentRepository
             return Database::pdo()->query($sql)->fetchAll();
         });
     }
+
+    /**
+     * Get related blog posts (exclude $currentSlug, return max $limit recent posts).
+     */
+    public function relatedPosts(string $currentSlug, int $limit = 4): array
+    {
+        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo
+                FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id
+                WHERE bp.status = 'approved' AND bp.slug != ?
+                ORDER BY bp.published_at DESC, bp.id DESC
+                LIMIT " . (int) $limit;
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute([$currentSlug]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Collect all public URLs for sitemap generation.
+     * Returns array of ['loc' => url, 'lastmod' => Y-m-d, 'changefreq' => ..., 'priority' => ...]
+     */
+    public function sitemapUrls(): array
+    {
+        $base = rtrim(config('app.base_url', ''), '/');
+        $urls = [];
+
+        // Homepage
+        $urls[] = [
+            'loc'        => $base . '/',
+            'lastmod'    => date('Y-m-d'),
+            'changefreq' => 'daily',
+            'priority'   => '1.0',
+        ];
+
+        // Blog listing
+        $urls[] = [
+            'loc'        => $base . '/blog',
+            'lastmod'    => date('Y-m-d'),
+            'changefreq' => 'daily',
+            'priority'   => '0.8',
+        ];
+
+        // Blog posts
+        $posts = Database::pdo()->query("SELECT slug, updated_at, published_at FROM blog_posts WHERE status = 'approved' ORDER BY published_at DESC")->fetchAll();
+        foreach ($posts as $post) {
+            $mod = !empty($post['updated_at']) ? date('Y-m-d', strtotime($post['updated_at'])) : date('Y-m-d', strtotime($post['published_at']));
+            $urls[] = [
+                'loc'        => $base . '/blog/' . $post['slug'],
+                'lastmod'    => $mod,
+                'changefreq' => 'weekly',
+                'priority'   => '0.7',
+            ];
+        }
+
+        // Modules
+        $modules = Database::pdo()->query("SELECT slug, updated_at, created_at FROM modules WHERE is_active = 1 ORDER BY sort_order ASC")->fetchAll();
+        foreach ($modules as $mod) {
+            $lastmod = !empty($mod['updated_at']) ? date('Y-m-d', strtotime($mod['updated_at'])) : date('Y-m-d', strtotime($mod['created_at']));
+            $urls[] = [
+                'loc'        => $base . '/modul/' . $mod['slug'],
+                'lastmod'    => $lastmod,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ];
+        }
+
+        return $urls;
+    }
+
+    /**
+     * Record sitemap generation timestamp.
+     */
+    public function recordSitemapGeneration(): void
+    {
+        try {
+            Database::pdo()->exec("INSERT INTO sitemap_log (generated_at) VALUES (NOW())");
+        } catch (\Throwable $e) {
+            // Table may not exist yet; silently ignore
+        }
+    }
+
+    /**
+     * Check if sitemap was generated today.
+     */
+    public function sitemapGeneratedToday(): bool
+    {
+        try {
+            $stmt = Database::pdo()->query("SELECT COUNT(*) as cnt FROM sitemap_log WHERE DATE(generated_at) = CURDATE()");
+            $row = $stmt->fetch();
+            return (int)($row['cnt'] ?? 0) > 0;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 }
