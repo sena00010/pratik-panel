@@ -36,9 +36,12 @@ $tocHtml = $tocData['toc'];
 $articleHtml = $tocData['content'];
 $relatedPosts = $relatedPosts ?? [];
 ?>
-<?php if (!empty($post['cover_image'])): ?>
+<?php if (!empty($post['cover_image'])):
+    $coverUrl = strpos($post['cover_image'], 'http') === 0 ? $post['cover_image'] : asset($post['cover_image']);
+?>
 <div class="blog-hero-image">
-    <img src="<?= e(strpos($post['cover_image'], 'http') === 0 ? $post['cover_image'] : asset($post['cover_image'])) ?>" alt="<?= e($post['title']) ?> - kapak görseli">
+    <div class="blog-hero-image__blur" style="background-image:url('<?= e($coverUrl) ?>')"></div>
+    <img src="<?= e($coverUrl) ?>" alt="<?= e($post['title']) ?> - kapak görseli">
 </div>
 <?php endif; ?>
 <section class="blog-detail-header">
