@@ -1,23 +1,28 @@
 <?php
-// Render content with proper paragraph separation and heading IDs for TOC
+// Render content: detect if it's Quill HTML or plain text
 function render_blog_content(string $content): string {
+    // If content contains HTML tags (from Quill editor), render as HTML
+    if (preg_match('/<[a-z][\s\S]*>/i', $content)) {
+        // Strip dangerous tags but allow safe formatting
+        $allowed = '<p><br><strong><b><em><i><u><s><a><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><pre><code><img><figure><figcaption><span><div><table><thead><tbody><tr><td><th><hr><sub><sup>';
+        $html = strip_tags($content, $allowed);
+        // Ensure images have alt attributes
+        $html = preg_replace_callback('/<img(?![^>]*alt=)[^>]*>/i', function($m) {
+            return str_replace('<img', '<img alt="Blog görseli"', $m[0]);
+        }, $html);
+        return $html;
+    }
+
+    // Plain text: split by double newlines into paragraphs
     $paragraphs = preg_split('/\n{2,}/', $content);
     $html = '';
     foreach ($paragraphs as $p) {
         $p = trim($p);
         if ($p === '') continue;
-        // Check if it looks like a heading (## or ###)
+        // Check if it looks like a markdown heading (## or ###)
         if (preg_match('/^(#{2,3})\s+(.+)$/', $p, $hMatch)) {
             $level = strlen($hMatch[1]) === 2 ? 'h2' : 'h3';
             $html .= '<' . $level . '>' . e($hMatch[2]) . '</' . $level . '>';
-        }
-        // Check if it's an image tag (already HTML)
-        elseif (strpos($p, '<img') === 0 || strpos($p, '<figure') === 0) {
-            // Ensure alt attribute exists
-            if (strpos($p, 'alt=') === false) {
-                $p = preg_replace('/<img /', '<img alt="Blog görseli" ', $p);
-            }
-            $html .= $p;
         } else {
             $html .= '<p>' . nl2br(e($p)) . '</p>';
         }
