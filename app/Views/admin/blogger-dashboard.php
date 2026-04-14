@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="blog-post-actions">
-                        <button type="button" class="btn-edit" onclick='openEditor(<?= json_encode($post, JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE) ?>)'>Düzenle</button>
+                        <a href="<?= admin_url('blog-write?id=' . $post['id']) ?>" class="btn-edit" style="text-decoration:none;display:inline-block">Düzenle</a>
                         <form method="post" action="<?= admin_url('blogs/delete') ?>" onsubmit="event.preventDefault(); pgConfirm('Bu yazıyı silmek istediğinize emin misiniz?', () => this.submit(), 'Yazıyı Sil')" style="display:inline">
                             <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                             <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
@@ -97,72 +97,7 @@
             </div>
         <?php endif; ?>
 
-        <button type="button" class="btn-new-post" onclick="openEditor(null)">+ Yeni Blog Yazısı</button>
-    </section>
-
-    <!-- Blog Editörü (WordPress Benzeri) -->
-    <section class="panel" id="sec-editor" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-            <h2 id="editorTitle">✍️ Yeni Yazı</h2>
-            <button type="button" class="btn-back" onclick="closeEditor()">← Yazılarıma Dön</button>
-        </div>
-
-        <form method="post" action="<?= admin_url('blogs/save') ?>" enctype="multipart/form-data" id="blogForm">
-            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
-            <input type="hidden" name="id" id="f_id">
-
-            <!-- Adım 1: Temel Bilgiler -->
-            <div class="editor-step" id="step1">
-                <div class="step-header">
-                    <div class="step-badge active">1</div>
-                    <span>Temel Bilgiler</span>
-                </div>
-                <div class="editor-fields">
-                    <label class="wide">Başlık *<input name="title" id="f_title" required placeholder="Blog yazınızın başlığı"></label>
-                    <label>Slug (URL yolu)<input name="slug" id="f_slug" placeholder="otomatik-olusturulur"></label>
-                    <label>Yayın Tarihi<input type="datetime-local" name="published_at" id="f_pubdate"></label>
-                </div>
-            </div>
-
-            <!-- Adım 2: İçerik -->
-            <div class="editor-step" id="step2">
-                <div class="step-header">
-                    <div class="step-badge">2</div>
-                    <span>İçerik</span>
-                </div>
-                <div class="editor-fields">
-                    <label class="wide">Özet<textarea name="summary" id="f_summary" rows="2" placeholder="Yazınızın kısa özeti (listeleme ve SEO için)"></textarea></label>
-                    <div class="wide">
-                        <label>İçerik *</label>
-                        <div id="quillEditor"></div>
-                        <textarea name="content" id="f_content" style="display:none"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Adım 3: Medya & SEO -->
-            <div class="editor-step" id="step3">
-                <div class="step-header">
-                    <div class="step-badge">3</div>
-                    <span>Medya & SEO</span>
-                </div>
-                <div class="editor-fields">
-                    <label>Kapak Görsel URL<input name="cover_image" id="f_cover" placeholder="https://..."></label>
-                    <label>Kapak Görseli Yükle<input type="file" name="cover_image_file" accept="image/*"></label>
-                    <div class="wide" id="coverPreview" style="display:none;padding-bottom:8px">
-                        <img id="coverPreviewImg" style="max-height:140px;border-radius:10px;border:1px solid var(--border)">
-                    </div>
-                    <label>Meta Başlık (SEO)<input name="meta_title" id="f_meta_title" placeholder="Arama sonuçlarında görünen başlık" maxlength="70"></label>
-                    <label>Meta Açıklama (SEO)<input name="meta_description" id="f_meta_desc" placeholder="Arama sonuçlarında görünen açıklama" maxlength="160"></label>
-                </div>
-            </div>
-
-            <!-- Kaydet -->
-            <div class="editor-actions">
-                <label class="check" style="margin-right:auto"><input type="checkbox" name="is_published" id="f_publish" value="1" checked> Yayınla</label>
-                <button type="submit" class="btn-save">💾 Kaydet</button>
-            </div>
-        </form>
+        <a href="<?= admin_url('blog-write') ?>" class="btn-new-post" style="text-align:center;text-decoration:none;display:block">+ Yeni Blog Yazısı</a>
     </section>
 </main>
 
@@ -209,151 +144,12 @@
 }
 .btn-back:hover { border-color: var(--brand); color: var(--brand); }
 
-/* Editor Steps */
-.editor-step {
-    border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px;
-    overflow: hidden; transition: border-color .2s;
-}
-.editor-step:focus-within { border-color: rgba(18,200,191,.35); }
-.step-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 18px; background: var(--bg-input); font-weight: 700; font-size: 14px; color: var(--text-muted);
-}
-.step-badge {
-    width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 900; background: var(--border); color: var(--text-muted);
-}
-.step-badge.active { background: var(--brand); color: #021018; }
-.editor-fields {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 18px;
-}
-.editor-fields .wide { grid-column: 1 / -1; }
-.editor-fields label {
-    display: grid; gap: 8px; color: var(--text-muted); font-weight: 600; font-size: 14px;
-}
-.editor-fields input, .editor-fields textarea {
-    width: 100%; border: 1px solid var(--border); border-radius: 10px;
-    background: var(--bg-input); color: var(--text); padding: 12px 14px;
-    font: inherit; font-size: 15px; transition: border-color .2s, box-shadow .2s;
-}
-.editor-fields input:focus, .editor-fields textarea:focus {
-    outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-glow);
-}
-.editor-fields textarea { min-height: 80px; resize: vertical; }
-.editor-actions {
-    display: flex; align-items: center; gap: 12px; padding: 18px 0; border-top: 1px solid var(--border);
-    margin-top: 8px;
-}
-.editor-actions .check { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-muted); font-size: 14px; }
-.editor-actions .check input { width: auto; }
-.btn-save {
-    border: 0; border-radius: 10px; background: var(--brand); color: #021018;
-    padding: 14px 32px; font-weight: 800; font-size: 15px; cursor: pointer;
-    transition: transform .15s, box-shadow .15s;
-}
-.btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--brand-glow); }
-
-/* Quill Editor */
-#quillEditor {
-    border: 1px solid var(--border); border-radius: 0 0 10px 10px;
-    min-height: 260px; background: var(--bg-input); color: var(--text);
-}
-.ql-toolbar.ql-snow {
-    border: 1px solid var(--border) !important; border-radius: 10px 10px 0 0 !important;
-    background: var(--bg-panel) !important;
-}
-.ql-container.ql-snow { border: none !important; }
-.ql-editor { min-height: 240px; font-size: 15px; line-height: 1.7; color: var(--text); }
-[data-theme="dark"] .ql-snow .ql-stroke { stroke: var(--text-muted) !important; }
-[data-theme="dark"] .ql-snow .ql-fill { fill: var(--text-muted) !important; }
-[data-theme="dark"] .ql-snow .ql-picker-label { color: var(--text-muted) !important; }
-[data-theme="dark"] .ql-snow .ql-picker-options { background: var(--bg-panel) !important; border-color: var(--border) !important; }
-
 @media (max-width: 760px) {
-    .editor-fields { grid-template-columns: 1fr; }
     .blog-post-item { flex-direction: column; align-items: flex-start; gap: 10px; }
     .blog-post-actions { margin-left: 0; }
 }
 </style>
 
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-<script>
-let quill;
-document.addEventListener('DOMContentLoaded', function() {
-    quill = new Quill('#quillEditor', {
-        theme: 'snow',
-        placeholder: 'Yazınızı buraya yazın...',
-        modules: { toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            [{ align: [] }],
-            ['blockquote', 'link', 'image'],
-            ['clean']
-        ]}
-    });
-
-    document.getElementById('blogForm').addEventListener('submit', function() {
-        document.getElementById('f_content').value = quill.root.innerHTML;
-    });
-
-    // Cover preview
-    document.getElementById('f_cover').addEventListener('input', function() {
-        const url = this.value.trim();
-        if (url) {
-            document.getElementById('coverPreviewImg').src = url;
-            document.getElementById('coverPreview').style.display = 'block';
-        } else {
-            document.getElementById('coverPreview').style.display = 'none';
-        }
-    });
-});
-
-function openEditor(post) {
-    document.getElementById('sec-posts').style.display = 'none';
-    document.getElementById('sec-editor').style.display = 'block';
-
-    if (post) {
-        document.getElementById('editorTitle').textContent = '✏️ Yazıyı Düzenle';
-        document.getElementById('f_id').value = post.id;
-        document.getElementById('f_title').value = post.title || '';
-        document.getElementById('f_slug').value = post.slug || '';
-        document.getElementById('f_summary').value = post.summary || '';
-        document.getElementById('f_cover').value = post.cover_image || '';
-        document.getElementById('f_meta_title').value = post.meta_title || '';
-        document.getElementById('f_meta_desc').value = post.meta_description || '';
-        document.getElementById('f_publish').checked = !!parseInt(post.is_published);
-        if (post.published_at) document.getElementById('f_pubdate').value = post.published_at.replace(' ', 'T');
-        quill.root.innerHTML = post.content || '';
-        if (post.cover_image) {
-            document.getElementById('coverPreviewImg').src = post.cover_image;
-            document.getElementById('coverPreview').style.display = 'block';
-        }
-    } else {
-        document.getElementById('editorTitle').textContent = '✍️ Yeni Yazı';
-        document.getElementById('f_id').value = '';
-        document.getElementById('f_title').value = '';
-        document.getElementById('f_slug').value = '';
-        document.getElementById('f_summary').value = '';
-        document.getElementById('f_cover').value = '';
-        document.getElementById('f_meta_title').value = '';
-        document.getElementById('f_meta_desc').value = '';
-        document.getElementById('f_publish').checked = true;
-        document.getElementById('f_pubdate').value = new Date().toISOString().slice(0,16);
-        document.getElementById('coverPreview').style.display = 'none';
-        quill.root.innerHTML = '';
-    }
-
-    // Activate all step badges
-    document.querySelectorAll('.step-badge').forEach(b => b.classList.add('active'));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function closeEditor() {
-    document.getElementById('sec-editor').style.display = 'none';
-    document.getElementById('sec-posts').style.display = 'block';
-}
 
 async function uploadProfilePhoto(input) {
     if(!input.files || input.files.length === 0) return;

@@ -53,6 +53,35 @@ final class AdminController
         ], 'layouts/admin');
     }
 
+    public function blogWritePage(): void
+    {
+        if (!$this->isLoggedIn()) {
+            redirect(config('app.admin_path'));
+            return;
+        }
+
+        $id = (int) ($_GET['id'] ?? 0);
+        $post = null;
+        $role = $_SESSION['admin_role'] ?? 'admin';
+
+        if ($id > 0) {
+            $stmt = Database::pdo()->prepare('SELECT * FROM blog_posts WHERE id = ?');
+            $stmt->execute([$id]);
+            $post = $stmt->fetch();
+
+            if ($post && $role === 'blogger' && (int) $post['author_id'] !== (int) $_SESSION['admin_id']) {
+                $_SESSION['flash'] = 'Bu yazıyı düzenleme yetkiniz yok.';
+                redirect(config('app.admin_path'));
+                return;
+            }
+        }
+
+        View::render('admin/blog-write', [
+            'post' => $post,
+            'role' => $role,
+        ], 'layouts/admin');
+    }
+
     public function blogApprovalPage(): void
     {
         if (!$this->isLoggedIn()) {
@@ -219,7 +248,12 @@ final class AdminController
         }
 
         $msg = $status === 'pending' ? 'Blog yazısı kaydedildi ve onay bekliyor.' : 'Blog yazısı kaydedildi.';
-        $this->done($msg);
+        cache_clear();
+        $_SESSION['flash'] = $message ?? $msg; // Ensure custom flash overrides
+
+        // Redirect appropriately
+        $redirectUrl = !empty($_POST['redirect_to']) ? (string)$_POST['redirect_to'] : config('app.admin_path');
+        redirect($redirectUrl);
     }
 
     public function approveBlog(): void

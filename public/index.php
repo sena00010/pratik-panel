@@ -13,6 +13,7 @@ $router->get('/modul/{slug}', [PublicController::class, 'moduleDetail']);
 $adminPath = config('app.admin_path');
 $router->get('/login', [AdminController::class, 'redirectToAdmin']);
 $router->get($adminPath, [AdminController::class, 'dashboard']);
+$router->get($adminPath . '/blog-write', [AdminController::class, 'blogWritePage']);
 $router->get($adminPath . '/blog-onay', [AdminController::class, 'blogApprovalPage']);
 $router->post($adminPath . '/login', [AdminController::class, 'login']);
 $router->post($adminPath . '/logout', [AdminController::class, 'logout']);

@@ -216,7 +216,7 @@ if (!is_array($trustedData)) $trustedData = [];
                     <small>/blog/<?= e($post['slug']) ?></small>
                 </summary>
                 <div style="padding:12px 0">
-                    <button type="button" class="btn-edit" onclick='adminOpenEditor(<?= json_encode($post, JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE) ?>)' style="border:1px solid var(--brand);background:transparent;color:var(--brand);padding:7px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;margin-right:8px">✏️ Düzenle</button>
+                    <a href="<?= admin_url('blog-write?id=' . $post['id']) ?>" class="btn-edit" style="display:inline-block;border:1px solid var(--brand);background:transparent;color:var(--brand);padding:7px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;margin-right:8px;text-decoration:none;">✏️ Düzenle</a>
                     <form method="post" action="<?= admin_url('blogs/delete') ?>" onsubmit="event.preventDefault(); pgConfirm('Bu yazıyı silmek istediğinize emin misiniz?', () => this.submit(), 'Yazıyı Sil')" style="display:inline">
                         <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                         <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
@@ -227,41 +227,7 @@ if (!is_array($trustedData)) $trustedData = [];
             <?php endforeach; ?>
         </div>
 
-        <button type="button" onclick="adminOpenEditor(null)" style="display:block;width:100%;padding:14px;border:2px dashed rgba(18,200,191,.4);border-radius:10px;background:transparent;color:var(--brand);font-weight:800;font-size:15px;cursor:pointer;margin-top:16px;transition:background .18s,border-color .18s" onmouseover="this.style.background='var(--brand-glow)';this.style.borderColor='var(--brand)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(18,200,191,.4)'">+ Yeni Blog Yazısı</button>
-    </section>
-
-    <!-- Admin Blog Editörü (Quill) -->
-    <section class="panel" id="sec-admin-editor" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-            <h2 id="adminEditorTitle">✍️ Yeni Yazı</h2>
-            <button type="button" onclick="adminCloseEditor()" style="border:1px solid var(--border);background:transparent;color:var(--text-muted);padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">← Listeye Dön</button>
-        </div>
-
-        <form method="post" action="<?= admin_url('blogs/save') ?>" enctype="multipart/form-data" id="adminBlogForm">
-            <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
-            <input type="hidden" name="id" id="af_id">
-
-            <div class="grid-form">
-                <label>Başlık *<input name="title" id="af_title" required placeholder="Blog yazınızın başlığı"></label>
-                <label>Slug (URL)<input name="slug" id="af_slug" placeholder="otomatik-olusturulur"></label>
-                <label>Yayın Tarihi<input type="datetime-local" name="published_at" id="af_pubdate"></label>
-                <label>Kapak Görsel URL<input name="cover_image" id="af_cover" placeholder="https://..."></label>
-                <label>Kapak Görseli Yükle<input type="file" name="cover_image_file" accept="image/*"></label>
-                <label class="wide">Özet<textarea name="summary" id="af_summary" rows="2" placeholder="Yazınızın kısa özeti"></textarea></label>
-                <div class="wide">
-                    <label>İçerik *</label>
-                    <div id="adminQuillEditor" style="min-height:260px;border:1px solid var(--border);border-radius:0 0 10px 10px;background:var(--bg-input);color:var(--text)"></div>
-                    <textarea name="content" id="af_content" style="display:none"></textarea>
-                </div>
-                <label>Meta Başlık (SEO)<input name="meta_title" id="af_meta_title" placeholder="Arama sonuçlarında görünen başlık" maxlength="70"></label>
-                <label>Meta Açıklama (SEO)<input name="meta_description" id="af_meta_desc" placeholder="Arama sonuçlarında görünen açıklama" maxlength="160"></label>
-            </div>
-
-            <div style="display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--border);margin-top:12px">
-                <label class="check" style="margin-right:auto"><input type="checkbox" name="is_published" id="af_publish" value="1" checked> Yayınla (Otomatik Onaylı)</label>
-                <button style="border:0;border-radius:10px;background:var(--brand);color:#021018;padding:14px 32px;font-weight:800;font-size:15px;cursor:pointer">💾 Kaydet</button>
-            </div>
-        </form>
+        <a href="<?= admin_url('blog-write') ?>" style="display:block;width:100%;text-align:center;padding:14px;border:2px dashed rgba(18,200,191,.4);border-radius:10px;background:transparent;color:var(--brand);font-weight:800;font-size:15px;cursor:pointer;margin-top:16px;transition:background .18s,border-color .18s;text-decoration:none" onmouseover="this.style.background='var(--brand-glow)';this.style.borderColor='var(--brand)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(18,200,191,.4)'">+ Yeni Blog Yazısı</a>
     </section>
 
     <!-- ========== ENTEGRASYONLAR ========== -->
@@ -442,72 +408,6 @@ if (!is_array($trustedData)) $trustedData = [];
     </section>
 </main>
 
-<!-- Quill Editor for Admin Blog -->
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-<script>
-let adminQuill;
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Quill for admin blog editor
-    const editorEl = document.getElementById('adminQuillEditor');
-    if (editorEl) {
-        adminQuill = new Quill('#adminQuillEditor', {
-            theme: 'snow',
-            placeholder: 'Yazınızı buraya yazın...',
-            modules: { toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                [{ align: [] }],
-                ['blockquote', 'link', 'image'],
-                ['clean']
-            ]}
-        });
-
-        document.getElementById('adminBlogForm').addEventListener('submit', function() {
-            document.getElementById('af_content').value = adminQuill.root.innerHTML;
-        });
-    }
-});
-
-function adminOpenEditor(post) {
-    document.getElementById('sec-blog-write').style.display = 'none';
-    document.getElementById('sec-admin-editor').style.display = 'block';
-
-    if (post) {
-        document.getElementById('adminEditorTitle').textContent = '✏️ Yazıyı Düzenle';
-        document.getElementById('af_id').value = post.id;
-        document.getElementById('af_title').value = post.title || '';
-        document.getElementById('af_slug').value = post.slug || '';
-        document.getElementById('af_summary').value = post.summary || '';
-        document.getElementById('af_cover').value = post.cover_image || '';
-        document.getElementById('af_meta_title').value = post.meta_title || '';
-        document.getElementById('af_meta_desc').value = post.meta_description || '';
-        document.getElementById('af_publish').checked = !!parseInt(post.is_published);
-        if (post.published_at) document.getElementById('af_pubdate').value = post.published_at.replace(' ', 'T');
-        adminQuill.root.innerHTML = post.content || '';
-    } else {
-        document.getElementById('adminEditorTitle').textContent = '✍️ Yeni Yazı';
-        document.getElementById('af_id').value = '';
-        document.getElementById('af_title').value = '';
-        document.getElementById('af_slug').value = '';
-        document.getElementById('af_summary').value = '';
-        document.getElementById('af_cover').value = '';
-        document.getElementById('af_meta_title').value = '';
-        document.getElementById('af_meta_desc').value = '';
-        document.getElementById('af_publish').checked = true;
-        document.getElementById('af_pubdate').value = new Date().toISOString().slice(0,16);
-        adminQuill.root.innerHTML = '';
-    }
-
-    window.scrollTo({ top: document.getElementById('sec-admin-editor').offsetTop - 80, behavior: 'smooth' });
-}
-
-function adminCloseEditor() {
-    document.getElementById('sec-admin-editor').style.display = 'none';
-    document.getElementById('sec-blog-write').style.display = 'block';
-}
-</script>
 
 
 
