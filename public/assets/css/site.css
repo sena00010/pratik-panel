@@ -714,19 +714,20 @@ h1,h2,h3,
   .hero-stats {
     flex-wrap: nowrap;
     gap: 0;
-    padding-top: 24px;
+    padding-top: 14px;
     width: 94vw;
+    border-top: none;
   }
   .hero-stat {
     flex: 1;
   }
   .hero-stat strong {
-    font-size: 18px;
+    font-size: 16px;
   }
   .hero-stat span {
-    font-size: 7.5px;
-    margin-top: 3px;
-    letter-spacing: 0.06em;
+    font-size: 7px;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
   }
 }
 
@@ -1173,8 +1174,47 @@ h1,h2,h3,
   }
 }
 @media (max-width: 760px) {
-  .testimonials-map { padding: 20px 18px; }
-  .turkey-map-visual { height: 160px; }
+  .testimonials-section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .testimonials-map {
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+  .turkey-map-visual {
+    aspect-ratio: 1000 / 422;
+    height: auto;
+  }
+  .map-label {
+    font-size: 9px;
+    margin-bottom: 12px;
+  }
+  .map-dot { width: 8px; height: 8px; }
+  .map-dot.dot-sm { width: 6px; height: 6px; }
+  .map-dot.dot-xs { width: 5px; height: 5px; }
+  .map-footer-info {
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .map-legend {
+    font-size: 11px;
+    gap: 12px;
+    padding: 7px 14px;
+  }
+  .map-legend i {
+    width: 7px;
+    height: 7px;
+    margin-right: 5px;
+  }
+  .map-cities {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  .live-notify {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
   .testimonial-card { padding: 18px 20px; }
 }
 
