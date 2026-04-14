@@ -712,24 +712,21 @@ h1,h2,h3,
 
 @media (max-width: 760px) {
   .hero-stats {
-    flex-wrap: wrap;
-    gap: 16px 0;
+    flex-wrap: nowrap;
+    gap: 0;
     padding-top: 24px;
-    width: 92vw;
+    width: 94vw;
   }
   .hero-stat {
-    flex: 0 0 50%;
-  }
-  .hero-stat:nth-child(2)::after {
-    display: none;
+    flex: 1;
   }
   .hero-stat strong {
-    font-size: 22px;
+    font-size: 18px;
   }
   .hero-stat span {
-    font-size: 9px;
-    margin-top: 4px;
-    letter-spacing: 0.1em;
+    font-size: 7.5px;
+    margin-top: 3px;
+    letter-spacing: 0.06em;
   }
 }
 
