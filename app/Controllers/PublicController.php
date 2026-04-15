@@ -94,6 +94,14 @@ final class PublicController
             'breadcrumbs'  => $crumbs,
             'relatedPosts' => $relatedPosts,
             'schemaJson'   => SeoHelper::blogDetailSchema($post) . SeoHelper::breadcrumbSchema($crumbs),
+            'blogAuthor'   => [
+                'name'     => $post['author_name'] ?: $post['author_username'] ?: 'Pratik Gümrük',
+                'photo'    => $post['author_photo'] ?? '',
+                'role'     => $post['author_role'] ?? 'admin',
+                'date'     => date('d M Y', strtotime($post['published_at'])),
+                'dateIso'  => date('Y-m-d', strtotime($post['published_at'])),
+                'readTime' => max(1, (int)(mb_strlen($post['content'] ?? '') / 800)),
+            ],
         ]);
     }
 

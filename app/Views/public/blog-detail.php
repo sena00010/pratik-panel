@@ -48,7 +48,7 @@ $relatedPosts = $relatedPosts ?? [];
     <div class="blog-detail-header__inner">
         <h1><?= e($post['title']) ?></h1>
         <p class="blog-detail-lead"><?= e($post['summary']) ?></p>
-        <div class="blog-detail-meta">
+        <div class="blog-detail-meta blog-detail-meta--mobile">
             <?php if (!empty($post['author_photo'])): ?>
             <img class="blog-detail-meta__avatar" src="<?= e($post['author_photo']) ?>" alt="<?= e($post['author_name'] ?: $post['author_username'] ?: 'Yazar') ?> profil fotoğrafı">
             <?php else: ?>

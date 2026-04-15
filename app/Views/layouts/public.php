@@ -37,8 +37,8 @@ $canonicalUrl = SeoHelper::canonical(parse_url($canonicalPath, PHP_URL_PATH) ?: 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Inter+Tight:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260415d">
-    <script src="<?= asset('js/site.js') ?>?v=20260415d" defer></script>
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260415e">
+    <script src="<?= asset('js/site.js') ?>?v=20260415e" defer></script>
     <?= $schemaJson ?>
 </head>
 <body>
@@ -60,7 +60,24 @@ $canonicalUrl = SeoHelper::canonical(parse_url($canonicalPath, PHP_URL_PATH) ?: 
     </div>
 </header>
 <?php if (!empty($breadcrumbs) && count($breadcrumbs) > 1): ?>
+<div class="breadcrumb-bar">
 <?= SeoHelper::renderBreadcrumbHtml($breadcrumbs) ?>
+<?php if (!empty($blogAuthor)): ?>
+<div class="breadcrumb-bar__author">
+    <?php if (!empty($blogAuthor['photo'])): ?>
+    <img src="<?= e($blogAuthor['photo']) ?>" alt="<?= e($blogAuthor['name']) ?>" class="breadcrumb-bar__avatar">
+    <?php else: ?>
+    <div class="breadcrumb-bar__avatar breadcrumb-bar__avatar--letter"><?= mb_strtoupper(mb_substr($blogAuthor['name'], 0, 1)) ?></div>
+    <?php endif; ?>
+    <span class="breadcrumb-bar__name"><?= e($blogAuthor['name']) ?></span>
+    <span class="blog-detail-meta__badge blog-detail-meta__badge--<?= $blogAuthor['role'] === 'blogger' ? 'blogger' : 'admin' ?>"><?= $blogAuthor['role'] === 'blogger' ? 'Blogger' : 'Admin' ?></span>
+    <span class="breadcrumb-bar__sep">·</span>
+    <time datetime="<?= e($blogAuthor['dateIso']) ?>"><?= e($blogAuthor['date']) ?></time>
+    <span class="breadcrumb-bar__sep">·</span>
+    <span><?= $blogAuthor['readTime'] ?> dk</span>
+</div>
+<?php endif; ?>
+</div>
 <?php endif; ?>
 <main>
     <?= $content ?>
