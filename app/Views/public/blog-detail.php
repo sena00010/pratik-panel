@@ -46,20 +46,23 @@ $relatedPosts = $relatedPosts ?? [];
 <?php endif; ?>
 <section class="blog-detail-header">
     <div class="blog-detail-header__inner">
-        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;color:rgba(255,255,255,0.8)">
-            <?php if (!empty($post['author_photo'])): ?>
-            <img src="<?= e($post['author_photo']) ?>" alt="<?= e($post['author_name'] ?: $post['author_username'] ?: 'Yazar') ?> profil fotoğrafı" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1)">
-            <?php else: ?>
-            <div style="width:36px;height:36px;border-radius:50%;background:rgba(18,200,191,.15);color:#12c8bf;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'A', 0, 1)) ?></div>
-            <?php endif; ?>
-            <span style="font-weight:700"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Admin') ?></span>
-            <span style="color:rgba(255,255,255,0.3)">·</span>
-            <time datetime="<?= e(date('Y-m-d', strtotime($post['published_at']))) ?>" style="font-weight:500"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
-            <span style="color:rgba(255,255,255,0.3)">·</span>
-            <span style="font-weight:500"><?= max(1, (int)(mb_strlen($post['content'] ?? '') / 800)) ?> dk okuma</span>
-        </div>
         <h1><?= e($post['title']) ?></h1>
         <p class="blog-detail-lead"><?= e($post['summary']) ?></p>
+        <div class="blog-detail-meta">
+            <?php if (!empty($post['author_photo'])): ?>
+            <img class="blog-detail-meta__avatar" src="<?= e($post['author_photo']) ?>" alt="<?= e($post['author_name'] ?: $post['author_username'] ?: 'Yazar') ?> profil fotoğrafı">
+            <?php else: ?>
+            <div class="blog-detail-meta__avatar blog-detail-meta__avatar--letter"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'P', 0, 1)) ?></div>
+            <?php endif; ?>
+            <div class="blog-detail-meta__info">
+                <span class="blog-detail-meta__author"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Pratik Gümrük') ?></span>
+                <div class="blog-detail-meta__details">
+                    <time datetime="<?= e(date('Y-m-d', strtotime($post['published_at']))) ?>"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
+                    <span class="blog-detail-meta__dot">·</span>
+                    <span><?= max(1, (int)(mb_strlen($post['content'] ?? '') / 800)) ?> dk okuma</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 <article class="blog-detail-body">
