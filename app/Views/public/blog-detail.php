@@ -55,7 +55,11 @@ $relatedPosts = $relatedPosts ?? [];
             <div class="blog-detail-meta__avatar blog-detail-meta__avatar--letter"><?= mb_strtoupper(mb_substr($post['author_name'] ?: $post['author_username'] ?: 'P', 0, 1)) ?></div>
             <?php endif; ?>
             <div class="blog-detail-meta__info">
-                <span class="blog-detail-meta__author"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Pratik Gümrük') ?></span>
+                <div class="blog-detail-meta__name-row">
+                    <span class="blog-detail-meta__author"><?= e($post['author_name'] ?: $post['author_username'] ?: 'Pratik Gümrük') ?></span>
+                    <?php $role = $post['author_role'] ?? 'admin'; ?>
+                    <span class="blog-detail-meta__badge blog-detail-meta__badge--<?= $role === 'blogger' ? 'blogger' : 'admin' ?>"><?= $role === 'blogger' ? 'Blogger' : 'Admin' ?></span>
+                </div>
                 <div class="blog-detail-meta__details">
                     <time datetime="<?= e(date('Y-m-d', strtotime($post['published_at']))) ?>"><?= e(date('d M Y', strtotime($post['published_at']))) ?></time>
                     <span class="blog-detail-meta__dot">·</span>

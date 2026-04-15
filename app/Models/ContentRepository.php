@@ -69,7 +69,7 @@ final class ContentRepository
     public function blogPosts(bool $activeOnly = true): array
     {
         return cache_remember('blog_' . (int) $activeOnly, 300, function () use ($activeOnly): array {
-            $sql = 'SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo ' .
+            $sql = 'SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo, au.role as author_role ' .
                    'FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id' . 
                    ($activeOnly ? " WHERE bp.status = 'approved'" : '') . 
                    ' ORDER BY bp.published_at DESC, bp.id DESC';
@@ -79,7 +79,7 @@ final class ContentRepository
 
     public function blogPost(string $slug): ?array
     {
-        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo 
+        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo, au.role as author_role 
                 FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id 
                 WHERE bp.slug = ? AND bp.status = 'approved' LIMIT 1";
         $stmt = Database::pdo()->prepare($sql);
@@ -140,7 +140,7 @@ final class ContentRepository
      */
     public function relatedPosts(string $currentSlug, int $limit = 4): array
     {
-        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo
+        $sql = "SELECT bp.*, au.display_name as author_name, au.username as author_username, au.profile_photo as author_photo, au.role as author_role
                 FROM blog_posts bp LEFT JOIN admin_users au ON bp.author_id = au.id
                 WHERE bp.status = 'approved' AND bp.slug != ?
                 ORDER BY bp.published_at DESC, bp.id DESC

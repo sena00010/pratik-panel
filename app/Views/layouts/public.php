@@ -37,8 +37,8 @@ $canonicalUrl = SeoHelper::canonical(parse_url($canonicalPath, PHP_URL_PATH) ?: 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Inter+Tight:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260415b">
-    <script src="<?= asset('js/site.js') ?>?v=20260415b" defer></script>
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>?v=20260415c">
+    <script src="<?= asset('js/site.js') ?>?v=20260415c" defer></script>
     <?= $schemaJson ?>
 </head>
 <body>
