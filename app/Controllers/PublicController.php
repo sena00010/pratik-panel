@@ -58,6 +58,7 @@ final class PublicController
 
         View::render('public/blog', [
             'settings'    => $this->repo->siteSettings(),
+            'modules'     => $this->repo->modules(),
             'posts'       => $posts,
             'seo'         => $this->repo->seo('blog'),
             'pageType'    => 'blog',
@@ -88,6 +89,7 @@ final class PublicController
 
         View::render('public/blog-detail', [
             'settings'     => $this->repo->siteSettings(),
+            'modules'      => $this->repo->modules(),
             'post'         => $post,
             'seo'          => $seo,
             'pageType'     => 'blog_detail',
