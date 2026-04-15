@@ -570,7 +570,7 @@ h1,h2,h3,
 .blog-detail-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 14px;
   margin-top: 32px;
   padding-top: 24px;
